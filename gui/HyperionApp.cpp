@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "AboutWindow.h"
+#include "Hyperion.h"
 #include "HyperionApp.h"
 #include "MainWindow.h"
 
@@ -46,9 +47,10 @@ HyperionApp::RefsReceived(BMessage* msg)
 	// For each file we create a new window and send it
 	// a B_REFS_RECEIVED message.
 	for (int32 i = 0; msg->FindRef("refs", i, &ref) == B_OK; i++) {
-		BWindow* win = (i == 0 && IsLaunching()) ? fFirstWindow : NewWindow();
+		BWindow* win = i == 0 ? fFirstWindow : NewWindow();
 		BMessage m(B_REFS_RECEIVED);
 		m.AddRef("refs", &ref);
+		DBGMSG(("i=%d, B_REFS_RECEIVED for %s\n", i, ref.name));
 		win->PostMessage(&m);
 	}
 }
