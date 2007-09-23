@@ -4,8 +4,6 @@
 
 #include <Application.h>
 
-#define HYPERION_SIGNATURE "application/x-vnd.Hyperion"
-
 class BList;
 class BWindow;
 

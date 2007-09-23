@@ -2,6 +2,8 @@
 #ifndef HYPERION_H
 #define HYPERION_H
 
+#define HYPERION_SIGNATURE "application/x-vnd.Hyperion"
+
 #define DEBUG 1
 #include <Debug.h>
 
