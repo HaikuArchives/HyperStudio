@@ -1,6 +1,7 @@
 
 #include <Alert.h>
 #include <Application.h>
+#include <Bitmap.h>
 #include <File.h>
 #include <FilePanel.h>
 #include <Path.h>
@@ -11,10 +12,12 @@
 #include <String.h>
 
 #include "AddAudioTrackWindow.h"
+#include "AppIconMenu.h"
 #include "Exception.h"
 #include "Hyperion.h"
 #include "HyperionConsts.h"
 #include "MainWindow.h"
+#include "NewProjectWindow.h"
 #include "Project.h"
 #include "ProjectView.h"
 
@@ -24,17 +27,13 @@ MainWindow::MainWindow(BRect frame)
 	          B_NORMAL_WINDOW_FEEL,
 	          B_ASYNCHRONOUS_CONTROLS),
 	  fOpenPanel(NULL),
-	  fSavePanel(NULL),
-	  fPrjView(NULL)
+	  fSavePanel(NULL)
 {
-	// Set window title
-	SetTitle("Hyperion");
-
 	// Create menus
-	_InitMenus();
+	InitMenus();
 
 	// Create views
-	_InitViews();
+	InitViews();
 
 	// Automatically show this window
 	Show();
@@ -47,10 +46,6 @@ MainWindow::~MainWindow()
 		delete fOpenPanel;
 	if (fSavePanel)
 		delete fSavePanel;
-
-	// Delete project view
-	if (fPrjView)
-		delete fPrjView;
 }
 
 bool
@@ -79,7 +74,7 @@ MainWindow::MessageReceived(BMessage* msg)
 
 	// Menu messages
 	case MENU_PROJECT_NEW:
-		_NewProject();
+		NewProject();
 		break;
 	case MENU_PROJECT_OPEN:
 		if (!fOpenPanel)
@@ -89,12 +84,14 @@ MainWindow::MessageReceived(BMessage* msg)
 		}
 		fOpenPanel->Show();
 		break;
+#if 0
 	case MENU_PROJECT_SAVE:
 		if (project->FileName())
 			project->Save();
 		else
 			_SaveProjectAs();
 		break;
+#endif
 	case MENU_PROJECT_SAVEAS:
 		_SaveProjectAs();
 		break;
@@ -117,39 +114,38 @@ MainWindow::MessageReceived(BMessage* msg)
 }
 
 void
-MainWindow::_InitMenus()
+MainWindow::InitMenus()
 {
 	fMenuBar = new BMenuBar(BRect(0.0f, 0.0f, 0.0f, 0.0f), "MenuBar");
 
-	// TODO: Put an icon instead of a label, just like I saw in Zeta
 	BMenu* main = new BMenu("Hyperion");
 	BMenuItem *about = new BMenuItem("About"B_UTF8_ELLIPSIS, new BMessage(B_ABOUT_REQUESTED));
 	about->SetTarget(be_app);
 	main->AddItem(about);
 	main->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED), 'Q'));
-	fMenuBar->AddItem(main);
+	fMenuBar->AddItem(new AppIconMenu(main));
 
 	BMenu* project = new BMenu("Project");
 	project->AddItem(new BMenuItem("New"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_NEW), 'N'));
 	project->AddItem(new BMenuItem("Open"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_OPEN), 'O'));
-	fFileSave = new BMenuItem("Save", new BMessage(MENU_PROJECT_SAVE), 'S');
-	fFileSave->SetEnabled(false);
-	project->AddItem(fFileSave);
-	fFileSaveAs = new BMenuItem("Save as"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_SAVEAS));
-	fFileSaveAs->SetEnabled(false);
-	project->AddItem(fFileSaveAs);
-	fFileClose = new BMenuItem("Close", new BMessage(MENU_PROJECT_CLOSE), 'W');
-	fFileClose->SetEnabled(false);
-	project->AddItem(fFileClose);
+	fRecentMenu = new BMenu("Open Recent");
+	fRecentMenu->AddSeparatorItem();
+	BMenuItem* clearRecent = new BMenuItem("Clear Menu", new BMessage(MENU_PROJECT_CLEAR_RECENT));
+	fRecentMenu->AddItem(clearRecent);
+	project->AddItem(fRecentMenu);
+	project->AddSeparatorItem();
+	project->AddItem(new BMenuItem("Close", new BMessage(MENU_PROJECT_CLOSE), 'W'));
+	project->AddItem(new BMenuItem("Save", new BMessage(MENU_PROJECT_SAVE), 'S'));
+	project->AddItem(new BMenuItem("Save As"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_SAVEAS)));
+	project->AddItem(new BMenuItem("Save a Copy As"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_SAVE_COPYAS)));
+	project->AddSeparatorItem();
+	project->AddItem(new BMenuItem("Import"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_IMPORT)));
+	project->AddItem(new BMenuItem("Export mixdown"B_UTF8_ELLIPSIS, new BMessage(MENU_PROJECT_EXPORT)));
 	fMenuBar->AddItem(project);
 
 	BMenu* tracks = new BMenu("Tracks");
-	fTracksAddAudio = new BMenuItem("Add audio track"B_UTF8_ELLIPSIS, new BMessage(MENU_TRACKS_ADDAUDIO));
-	fTracksAddAudio->SetEnabled(false);
-	tracks->AddItem(fTracksAddAudio);
-	fTracksAddMidi = new BMenuItem("Add MIDI track"B_UTF8_ELLIPSIS, new BMessage(MENU_TRACKS_ADDMIDI));
-	fTracksAddMidi->SetEnabled(false);
-	tracks->AddItem(fTracksAddMidi);
+	tracks->AddItem(new BMenuItem("Add audio track"B_UTF8_ELLIPSIS, new BMessage(MENU_TRACKS_ADDAUDIO)));
+	tracks->AddItem(new BMenuItem("Add MIDI track"B_UTF8_ELLIPSIS, new BMessage(MENU_TRACKS_ADDMIDI)));
 	fMenuBar->AddItem(tracks);
 
 	// Add menu bar
@@ -158,15 +154,16 @@ MainWindow::_InitMenus()
 }
 
 void
-MainWindow::_InitViews()
+MainWindow::InitViews()
 {
-	// Add the main view so we can delete the project view
-	// when we close the project
-	rgb_color bg_color = tint_color(ui_color(B_PANEL_BACKGROUND_COLOR),
-	                                B_DARKEN_2_TINT);
-	fMainView = new BView(Bounds(), "MainView", B_FOLLOW_ALL, B_FULL_UPDATE_ON_RESIZE);
-	fMainView->SetViewColor(bg_color);
-	AddChild(fMainView);
+	// Create and add project view
+	BRect r = Bounds();
+	r.top = fMenuBar->Frame().Height();
+	fPrjView = new ProjectView(r);
+	AddChild(fPrjView);
+
+	// Set window title
+	SetTitle(fPrjView->CurrentProject()->Title());
 
 #if 0 // TODO: not sure about this
 	BStatusBar *sbar = new BStatusBar(BRect(0.0f, Bounds().Height() - 10.0f, Bounds().Width(), Bounds().Height()), "StatusBar");
@@ -175,46 +172,9 @@ MainWindow::_InitViews()
 }
 
 void
-MainWindow::_OpenProjectView()
-{
-	// Skip if already exist
-	if (fPrjView)
-		return;
-
-	// Create and add project view
-	BRect r = Bounds();
-	r.top = fMenuBar->Frame().Height();
-	fPrjView = new ProjectView(r);
-	fMainView->AddChild(fPrjView);
-
-	fFileSave->SetEnabled(true);
-	fFileSaveAs->SetEnabled(true);
-	fFileClose->SetEnabled(true);
-	fTracksAddAudio->SetEnabled(true);
-	fTracksAddMidi->SetEnabled(true);
-}
-
-void
-MainWindow::_CloseProjectView()
-{
-	// Delete project view if exist
-	if (fPrjView)
-	{
-		fMainView->RemoveChild(fPrjView);
-		delete fPrjView;
-		fPrjView = NULL;
-	}
-
-	fFileSave->SetEnabled(false);
-	fFileSaveAs->SetEnabled(false);
-	fFileClose->SetEnabled(false);
-	fTracksAddAudio->SetEnabled(false);
-	fTracksAddMidi->SetEnabled(false);
-}
-
-void
 MainWindow::_RefsReceived(BMessage* msg)
 {
+#if 0
 	entry_ref ref;
 
 	// Find opened file name
@@ -224,10 +184,6 @@ MainWindow::_RefsReceived(BMessage* msg)
 		                           B_WIDTH_AS_USUAL, B_STOP_ALERT);
 		alert->Go();
 	}
-
-	// Create a new empty project if needed
-	if (!project)
-		(void)new Project;
 
 	// Getn entry path and file name
 	BPath path;
@@ -251,11 +207,13 @@ MainWindow::_RefsReceived(BMessage* msg)
 
 	// Create the project view
 	_OpenProjectView();
+#endif
 }
 
 void
 MainWindow::_SaveRequested(BMessage* msg)
 {
+#if 0
 	// If we didn't open/create a project, just exit
 	if (!project)
 		return;
@@ -286,24 +244,14 @@ MainWindow::_SaveRequested(BMessage* msg)
 		BAlert *alert = new BAlert(NULL, e.what(), "OK");
 		alert->Go();
 	}
+#endif
 }
 
 void
-MainWindow::_NewProject()
+MainWindow::NewProject()
 {
-// TODO: ask template
-
-	// Create an empty project if needed
-	if (!project)
-		(void)new Project;
-
-	// Set a new title
-	BString newTitle;
-	newTitle << "Hyperion - " << project->Title();
-	SetTitle(newTitle.String());
-
-	// Open project view
-	_OpenProjectView();
+	NewProjectWindow* w = new NewProjectWindow;
+	w->Show();
 }
 
 void
@@ -320,6 +268,7 @@ MainWindow::_SaveProjectAs()
 bool
 MainWindow::_CloseProject()
 {
+#if 0
 	bool saveAs = !project->FileName();
 
 	// Prompt for saving if needed
@@ -354,6 +303,7 @@ MainWindow::_CloseProject()
 
 	// Close the project view
 	_CloseProjectView();
+#endif
 
 	return true;
 }

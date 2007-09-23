@@ -6,6 +6,7 @@
 
 #define HYPERION_SIGNATURE "application/x-vnd.Hyperion"
 
+class BList;
 class BWindow;
 
 class HyperionApp : public BApplication
@@ -18,9 +19,11 @@ public:
 
 	virtual void RefsReceived(BMessage* msg);
 	virtual void ArgvReceived(int32 argc, char** argv);
+	virtual bool QuitRequested();
 	virtual void AboutRequested();
 
 private:
+	BList* fWins;
 	BWindow* fFirstWindow;
 };
 

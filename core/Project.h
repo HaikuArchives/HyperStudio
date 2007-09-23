@@ -38,6 +38,4 @@ private:
 	bool fModified;
 };
 
-extern Project *project;
-
 #endif // PROJECT_H

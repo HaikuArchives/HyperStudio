@@ -16,6 +16,9 @@ ProjectView::ProjectView(BRect frame)
 	  fScale(25),
 	  fPointer(0)
 {
+	// Create a new empty project
+	fProject = new Project;
+
 	// Set background color
 	rgb_color bg_color = tint_color(ui_color(B_PANEL_BACKGROUND_COLOR),
 	                                B_DARKEN_2_TINT);
@@ -45,4 +48,5 @@ ProjectView::~ProjectView()
 {
 	delete fTimeLineView;
 	delete fTracksView;
+	delete fProject;
 }

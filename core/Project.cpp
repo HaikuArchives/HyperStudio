@@ -12,23 +12,22 @@
 
 using namespace Hyperion;
 
-Project *project = NULL;
+static uint32 new_project_count = 0;
 
 Project::Project()
 	: fDirectory(NULL),
 	  fFileName(NULL),
-	  fTitle("Untitled"),
 	  fFrequency(44100.0f),
 	  fSampleRate(24),
 	  fDuration(1000000000),
 	  fModified(true)
 {
+	// Set default title
+	fTitle = "Untitled ";
+	fTitle << ++new_project_count;
+
 	// Initialize members
 	fTimeLine = new TimeLine();
-
-	// Set global project pointer
-	if (project == NULL)
-		project = this;
 }
 
 Project::~Project()

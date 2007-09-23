@@ -1,6 +1,7 @@
 
 #include <Autolock.h>
 #include <Entry.h>
+#include <List.h>
 #include <Path.h>
 #include <Screen.h>
 
@@ -13,12 +14,18 @@
 
 HyperionApp::HyperionApp()
 	: BApplication(HYPERION_SIGNATURE),
+	  fWins(new BList),
 	  fFirstWindow(NewWindow())
 {
 }
 
 HyperionApp::~HyperionApp()
 {
+	// Delete windows invidually and the list
+	BWindow* item;
+	for (int32 i = 0; (item = (BWindow*)fWins->ItemAt(i)); i++)
+		delete item;
+	delete fWins;
 }
 
 BWindow*
@@ -31,7 +38,9 @@ HyperionApp::NewWindow()
 	frame.left = frame.top = 50.0f;
 	frame.right /= 1.5f;
 	frame.bottom /= 1.5f;
-	return new MainWindow(frame);
+	BWindow* win = new MainWindow(frame);
+	fWins->AddItem(win);
+	return win;
 }
 
 void
@@ -80,6 +89,26 @@ HyperionApp::ArgvReceived(int32 argc, char** argv)
 
 	if (m.HasRef("refs"))
 		RefsReceived(&m);
+}
+
+bool
+HyperionApp::QuitRequested()
+{
+	// Close all windows but even if only one couldn't be
+	// closed we cannot quit the application!
+	bool retval = true;
+	BWindow* win;
+	for (int32 i = 0; (win = (BWindow*)fWins->ItemAt(i)); i++) {
+		win->Lock();
+		if (!win->QuitRequested()) {
+			win->Unlock();
+			retval = false;
+			break;
+		}
+		win->Quit();
+	}
+
+	return retval;
 }
 
 void

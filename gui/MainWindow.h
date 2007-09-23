@@ -4,7 +4,9 @@
 
 #include <Window.h>
 
+class BBitmap;
 class BMenuBar;
+class BMenu;
 class BMenuItem;
 class BFilePanel;
 class ProjectView;
@@ -19,25 +21,18 @@ public:
 	virtual void MessageReceived(BMessage* msg);
 
 private:
-	void _InitMenus();
-	void _InitViews();
-	void _OpenProjectView();
-	void _CloseProjectView();
+	void InitMenus();
+	void InitViews();
 	void _RefsReceived(BMessage* msg);
 	void _SaveRequested(BMessage* msg);
-	void _NewProject();
+	void NewProject();
 	void _SaveProjectAs();
 	bool _CloseProject();
 
 	BMenuBar* fMenuBar;
-	BMenuItem* fFileSave;
-	BMenuItem* fFileSaveAs;
-	BMenuItem* fFileClose;
-	BMenuItem* fTracksAddAudio;
-	BMenuItem* fTracksAddMidi;
+	BMenu* fRecentMenu;
 	BFilePanel* fOpenPanel;
 	BFilePanel* fSavePanel;
-	BView* fMainView;
 	ProjectView* fPrjView;
 };
 
