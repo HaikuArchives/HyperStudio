@@ -15,16 +15,9 @@ using namespace Hyperion;
 static uint32 new_project_count = 0;
 
 Project::Project()
-	: fDirectory(NULL),
-	  fFileName(NULL),
-	  fFrequency(44100.0f),
-	  fSampleRate(24),
-	  fDuration(1000000000),
-	  fModified(true)
 {
-	// Set default title
-	fTitle = "Untitled ";
-	fTitle << ++new_project_count;
+	// Initialize the project
+	New();
 
 	// Initialize members
 	fTimeLine = new TimeLine();
@@ -33,8 +26,6 @@ Project::Project()
 Project::~Project()
 {
 	delete fTimeLine;
-	if (fDirectory)
-		(void)free(fDirectory);
 	if (fFileName)
 		(void)free(fFileName);
 }
@@ -43,6 +34,18 @@ TimeLine *
 Project::GetTimeLine() const
 {
 	return fTimeLine;
+}
+
+void
+Project::New()
+{
+	fFileName = NULL;
+	fFrequency = 44100.0f;
+	fSampleRate = 24;
+	fDuration = 1000000000;
+	fModified = false;
+	fTitle = "";
+	fTitle << "Untitled " << ++new_project_count;
 }
 
 void
@@ -109,8 +112,9 @@ Project::Load(const char* filename)
 void
 Project::Save()
 {
-	BDirectory dir(fDirectory);
-	BEntry entry(&dir, fFileName);
+	BDirectory dir;
+	BEntry entry(fFileName);
+	entry.GetParent(&dir);
 	BFile newFile;
 
 	// Create file entry
@@ -129,13 +133,8 @@ Project::Save()
 }
 
 void
-Project::SaveAs(const char* path, const char* filename)
+Project::SaveAs(const char* filename)
 {
-	// Set new directory
-	if (fDirectory)
-		(void)free(fDirectory);
-	fDirectory = strdup(path);
-
 	// Set new file name
 	if (fFileName)
 		(void)free(fFileName);

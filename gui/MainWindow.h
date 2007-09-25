@@ -10,6 +10,7 @@ class BMenu;
 class BMenuItem;
 class BFilePanel;
 class ProjectView;
+class NewProjectWindow;
 
 class MainWindow : public BWindow
 {
@@ -21,19 +22,18 @@ public:
 	virtual void MessageReceived(BMessage* msg);
 
 private:
-	void InitMenus();
-	void InitViews();
 	void _RefsReceived(BMessage* msg);
 	void _SaveRequested(BMessage* msg);
-	void NewProject();
-	void _SaveProjectAs();
-	bool _CloseProject();
+	void InitMenus();
+	void InitViews();
+	bool CloseProject();
 
 	BMenuBar* fMenuBar;
 	BMenu* fRecentMenu;
 	BFilePanel* fOpenPanel;
 	BFilePanel* fSavePanel;
 	ProjectView* fPrjView;
+	NewProjectWindow* fNewPrjWindow;
 };
 
 #endif // MAIN_WINDOW_H

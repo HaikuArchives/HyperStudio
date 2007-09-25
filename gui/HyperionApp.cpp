@@ -1,8 +1,13 @@
 
+#include <AppFileInfo.h>
 #include <Autolock.h>
+#include <Bitmap.h>
 #include <Entry.h>
+#include <Mime.h>
 #include <List.h>
 #include <Path.h>
+#include <Resources.h>
+#include <Roster.h>
 #include <Screen.h>
 
 #include <unistd.h>
@@ -17,6 +22,51 @@ HyperionApp::HyperionApp()
 	  fWins(new BList),
 	  fFirstWindow(NewWindow())
 {
+	// Installing MIME type
+	BMimeType projectType("application/x-hyperion");
+	if (projectType.InitCheck() == B_OK) {
+		if (!projectType.IsInstalled()) {
+			app_info info;
+			GetAppInfo(&info);
+			BFile appFile(&(info.ref), B_READ_ONLY);
+			BResources res(&appFile, false);
+
+			size_t len = 0;
+			BBitmap* icon = NULL;
+			void* iconBits = NULL;
+
+			iconBits = res.FindResource('ICON', "BEOS:L:application/x-hyperion", &len);
+			if (iconBits) {
+				icon = new BBitmap(BRect(0, 0, 31, 31), B_CMAP8);
+				icon->SetBits(iconBits, len, 0, B_CMAP8);
+				projectType.SetIcon(icon, B_LARGE_ICON);
+				delete icon;
+				icon = NULL;
+				len = 0;
+			}
+
+			iconBits = res.FindResource('ICON', "BEOS:M:application/x-hyperion", &len);
+			if (iconBits) {
+				icon = new BBitmap(BRect(0, 0, 15, 15), B_CMAP8);
+				icon->SetBits(iconBits, len, 0, B_CMAP8);
+				projectType.SetIcon(icon, B_MINI_ICON);
+				delete icon;
+				icon = NULL;
+				len = 0;
+			}
+
+			// Extensions
+			BMessage extensions;
+			extensions.AddString("extensions", "hprj");
+			projectType.SetFileExtensions(&extensions);
+			projectType.SetShortDescription("Hyperion Project File");
+			projectType.SetLongDescription("Hyperion Project File.");
+
+			// Set Preferred Application
+			projectType.SetPreferredApp(HYPERION_SIGNATURE, B_OPEN);
+			projectType.Install();
+		}
+	}
 }
 
 HyperionApp::~HyperionApp()

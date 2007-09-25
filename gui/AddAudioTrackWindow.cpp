@@ -10,21 +10,19 @@
 AddAudioTrackWindow::AddAudioTrackWindow()
 	: BWindow(BRect(50,50,300,200),
 	          "Add audio track",
-	          B_MODAL_WINDOW_LOOK,
+	          B_TITLED_WINDOW_LOOK,
 	          B_MODAL_APP_WINDOW_FEEL,
 	          B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS)
 {
-	BView* child = new BView(Bounds(), "AddAudioTrackView",
-	                         B_FOLLOW_ALL, B_FULL_UPDATE_ON_RESIZE);
+	BView* view = new BView(Bounds(), "AddAudioTrackView", B_FOLLOW_ALL, B_WILL_DRAW);
+	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	AddChild(view);
 
 	BMenu* menu = new BMenu("             ");
 	_PopulateMenu(menu);
 	BMenuField* field = new BMenuField(BRect(0,0,150,20),
 	                                   "AddAudioTrackChannels", "&Channels:", menu);
-	child->ResizeToPreferred();
-	child->AddChild(field);
-
-	AddChild(child);
+	view->AddChild(field);
 }
 
 void

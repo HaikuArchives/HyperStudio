@@ -27,13 +27,20 @@ MainWindow::MainWindow(BRect frame)
 	          B_NORMAL_WINDOW_FEEL,
 	          B_ASYNCHRONOUS_CONTROLS),
 	  fOpenPanel(NULL),
-	  fSavePanel(NULL)
+	  fSavePanel(NULL),
+	  fNewPrjWindow(NULL)
 {
 	// Create menus
 	InitMenus();
 
 	// Create views
 	InitViews();
+
+	// Create open and save panels
+	fOpenPanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(this));
+	fOpenPanel->Window()->SetTitle("Select a project to open:");
+	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this));
+	fSavePanel->Window()->SetTitle("Save the project to:");
 
 	// Automatically show this window
 	Show();
@@ -42,17 +49,15 @@ MainWindow::MainWindow(BRect frame)
 MainWindow::~MainWindow()
 {
 	// Delete open and save panels
-	if (fOpenPanel)
-		delete fOpenPanel;
-	if (fSavePanel)
-		delete fSavePanel;
+	delete fOpenPanel;
+	delete fSavePanel;
 }
 
 bool
 MainWindow::QuitRequested()
 {
 	// Close the project
-	if (!_CloseProject())
+	if (!CloseProject())
 		return false;
 
 	// Quit the application
@@ -65,6 +70,7 @@ MainWindow::MessageReceived(BMessage* msg)
 {
 	switch (msg->what)
 	{
+	// Open/save panel messages
 	case B_REFS_RECEIVED:
 		_RefsReceived(msg);
 		break;
@@ -74,29 +80,24 @@ MainWindow::MessageReceived(BMessage* msg)
 
 	// Menu messages
 	case MENU_PROJECT_NEW:
-		NewProject();
+		if (!fNewPrjWindow)
+			fNewPrjWindow = new NewProjectWindow(this);
+		fNewPrjWindow->Show();
 		break;
 	case MENU_PROJECT_OPEN:
-		if (!fOpenPanel)
-		{
-			fOpenPanel = new BFilePanel(B_OPEN_PANEL, &be_app_messenger);
-			fOpenPanel->Window()->SetTitle("Select a project to open:");
-		}
 		fOpenPanel->Show();
 		break;
-#if 0
 	case MENU_PROJECT_SAVE:
-		if (project->FileName())
-			project->Save();
+		if (fPrjView->CurrentProject()->FileName())
+			fPrjView->CurrentProject()->Save();
 		else
-			_SaveProjectAs();
+			fSavePanel->Show();
 		break;
-#endif
 	case MENU_PROJECT_SAVEAS:
-		_SaveProjectAs();
+		fSavePanel->Show();
 		break;
 	case MENU_PROJECT_CLOSE:
-		_CloseProject();
+		Quit();
 		break;
 	case MENU_TRACKS_ADDAUDIO: {
 			AddAudioTrackWindow* win = new AddAudioTrackWindow();
@@ -106,10 +107,84 @@ MainWindow::MessageReceived(BMessage* msg)
 	case MENU_TRACKS_ADDMIDI:
 		break;
 
+	// Dialog messages
+	case kNewProjectSelected:
+		fNewPrjWindow->Hide();
+		fPrjView->CurrentProject()->New();
+		SetTitle(fPrjView->CurrentProject()->Title());
+		break;
+	case kNewProjectCanceled:
+		fNewPrjWindow = NULL;
+		break;
+
 	// Default handler
 	default:
 		BWindow::MessageReceived(msg);
 		break;
+	}
+}
+
+void
+MainWindow::_RefsReceived(BMessage* msg)
+{
+	entry_ref ref;
+
+	// Find opened file name
+	if (msg->FindRef("refs", &ref) != B_OK)
+	{
+		BAlert *alert = new BAlert(NULL, "Internal error while opening!", "OK", NULL, NULL,
+		                           B_WIDTH_AS_USUAL, B_STOP_ALERT);
+		alert->Go();
+	}
+
+	// Getn entry path and file name
+	BPath path;
+	BEntry entry(&ref, true);
+	entry.GetPath(&path);
+
+	// Load project file
+	try {
+		fPrjView->CurrentProject()->Load(path.Path());
+	} catch (Hyperion::Exception e) {
+		BAlert* alert = new BAlert(NULL, e.what(), "OK", NULL, NULL,
+		                           B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT);
+		alert->Go();
+		return;
+	}
+
+	// Set a new title
+	SetTitle(fPrjView->CurrentProject()->Title());
+}
+
+void
+MainWindow::_SaveRequested(BMessage* msg)
+{
+	entry_ref dir_ref, file_ref;
+	const char* filename;
+
+	// Find directory and file name
+	if (!((msg->FindRef("directory", &dir_ref) == B_OK) &&
+	      (msg->FindString("name", &filename) == B_OK)))
+	{
+		BAlert *alert = new BAlert(NULL, "Internal error while saving!", "OK", NULL, NULL,
+		                           B_WIDTH_AS_USUAL, B_STOP_ALERT);
+		alert->Go();
+	}
+
+	// Get directory full path
+	BDirectory dir;
+	dir.SetTo(&dir_ref);
+	if (dir.InitCheck() != B_OK)
+		return;
+	BPath path(&dir_ref);
+	path.Append(filename);
+
+	// Save project file
+	try {
+		fPrjView->CurrentProject()->SaveAs(path.Path());
+	} catch (Hyperion::Exception e) {
+		BAlert *alert = new BAlert(NULL, e.what(), "OK");
+		alert->Go();
 	}
 }
 
@@ -171,112 +246,21 @@ MainWindow::InitViews()
 #endif
 }
 
-void
-MainWindow::_RefsReceived(BMessage* msg)
-{
-#if 0
-	entry_ref ref;
-
-	// Find opened file name
-	if (msg->FindRef("refs", &ref) != B_OK)
-	{
-		BAlert *alert = new BAlert(NULL, "Internal error while opening!", "OK", NULL, NULL,
-		                           B_WIDTH_AS_USUAL, B_STOP_ALERT);
-		alert->Go();
-	}
-
-	// Getn entry path and file name
-	BPath path;
-	BEntry entry(&ref, true);
-	entry.GetPath(&path);
-
-	// Load project file
-	try {
-		project->Load(path.Path());
-	} catch (Hyperion::Exception e) {
-		BAlert* alert = new BAlert(NULL, e.what(), "OK", NULL, NULL,
-		                           B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT);
-		alert->Go();
-		return;
-	}
-
-	// Set a new title
-	BString newTitle;
-	newTitle << "Hyperion - " << project->Title();
-	SetTitle(newTitle.String());
-
-	// Create the project view
-	_OpenProjectView();
-#endif
-}
-
-void
-MainWindow::_SaveRequested(BMessage* msg)
-{
-#if 0
-	// If we didn't open/create a project, just exit
-	if (!project)
-		return;
-
-	entry_ref dir_ref, file_ref;
-	const char* filename;
-
-	// Find directory and file name
-	if (!((msg->FindRef("directory", &dir_ref) == B_OK) &&
-	      (msg->FindString("name", &filename) == B_OK)))
-	{
-		BAlert *alert = new BAlert(NULL, "Internal error while saving!", "OK", NULL, NULL,
-		                           B_WIDTH_AS_USUAL, B_STOP_ALERT);
-		alert->Go();
-	}
-
-	// Get directory full path
-	BDirectory dir;
-	dir.SetTo(&dir_ref);
-	if (dir.InitCheck() != B_OK)
-		return;
-	BPath path(&dir_ref);
-
-	// Save project file
-	try {
-		project->SaveAs(path.Path(), filename);
-	} catch (Hyperion::Exception e) {
-		BAlert *alert = new BAlert(NULL, e.what(), "OK");
-		alert->Go();
-	}
-#endif
-}
-
-void
-MainWindow::NewProject()
-{
-	NewProjectWindow* w = new NewProjectWindow;
-	w->Show();
-}
-
-void
-MainWindow::_SaveProjectAs()
-{
-	if (!fSavePanel)
-	{
-		fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this));
-		fSavePanel->Window()->SetTitle("Save the project to:");
-	}
-	fSavePanel->Show();	
-}
-
 bool
-MainWindow::_CloseProject()
+MainWindow::CloseProject()
 {
-#if 0
-	bool saveAs = !project->FileName();
+	// Just exit successfully if already saved
+	if (!fPrjView->CurrentProject()->IsModified())
+		return true;
+
+	bool saveAs = (fPrjView->CurrentProject()->FileName() != NULL);
 
 	// Prompt for saving if needed
-	if (project->IsModified())
+	if (fPrjView->CurrentProject()->IsModified())
 	{
 		BString warnMsg;
 		warnMsg << "Save changes to the project ";
-		warnMsg << "\"" << project->Title() << "\"?";
+		warnMsg << "\"" << fPrjView->CurrentProject()->Title() << "\"?";
 		BAlert *alert = new BAlert("Save changes", warnMsg.String(),
 		                           "Cancel", "Don't save", "Save",
 		                           B_WIDTH_AS_USUAL, B_OFFSET_SPACING,
@@ -292,18 +276,17 @@ MainWindow::_CloseProject()
 			break;
 		case 2:
 			if (!saveAs)
-				project->Save();
+				fPrjView->CurrentProject()->Save();
 			break;
 		}
 	}
 
 	// Save as...
 	if (saveAs)
-		_SaveProjectAs();
-
-	// Close the project view
-	_CloseProjectView();
-#endif
+	{
+		fSavePanel->Show();
+		return false;
+	}
 
 	return true;
 }

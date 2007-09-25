@@ -18,17 +18,16 @@ public:
 
 	TimeLine *GetTimeLine() const;
 
-	const char* Directory() const { return fDirectory; }
 	const char* FileName() const { return fFileName; }
 
 	bool IsModified() const { return fModified; }
 
+	void New();
 	void Load(const char* filename);
 	void Save();
-	void SaveAs(const char* path, const char* filename);
+	void SaveAs(const char* filename);
 
 private:
-	char* fDirectory;
 	char* fFileName;
 	BString fTitle;
 	float fFrequency;
