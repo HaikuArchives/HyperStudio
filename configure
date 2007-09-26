@@ -1,0 +1,76 @@
+#!/bin/sh
+
+CC="gcc"
+CXX="g++"
+CCFLAGS="$CCFLAGS -Wall -g"
+OPTIM="$OPTIM -O2"
+LINKLIBS=""
+SYSTEM="`uname -s`"
+RELEASE="`uname -r`"
+
+# System-specific flags
+case $SYSTEM in
+	BeOS)
+		CCFLAGS="$CCFLAGS -Wno-multichar"
+		DEFINES="$DEFINES SYS_BEOS"
+		LINKLIBS="$LINKLIBS -be -ltracker"
+		case $RELEASE in
+			6.0|5.0.4) # Zeta or R5 / BONE beta 7
+				SYSTEM="$SYSTEM / BONE"
+				DEFINES="$DEFINES BEOS_BONE BEOS_PLATFORM=Zeta"
+			;;
+			5.0*) # R5 / net_server
+				SYSTEM="$SYSTEM / net_server"
+				DEFINES="$DEFINES BEOS_NETSERVER BEOS_PLATFORM=BeOS"
+			;;
+			*)
+				echo "Unsupported BeOS version $RELEASE"
+				exit 1
+			;;
+		esac
+	;;
+	Haiku)
+		CCFLAGS="$CCFLAGS -Wno-multichar"
+		DEFINES="$DEFINES SYS_HAIKU BEOS_PLATFORM=Haiku"
+		LINKLIBS="$LINKLIBS -be -ltracker"
+	;;
+	*)
+		echo "$SYSTEM is an unsupported operating system"
+		exit 1
+	;;
+esac
+echo "System: $SYSTEM"
+
+# Check for endianness
+cat > testconf.c << EOF
+int main()
+{
+	int i = 1;
+	return *( (char *) &i );
+}
+EOF
+if ( cc -o testconf testconf.c && ./testconf ) > /dev/null 2>&1; then
+	echo "Endian: big"
+	DEFINES="$DEFINES WORDS_BIGENDIAN"
+else
+	echo "Endian: little"
+fi
+rm -f testconf.c testconf
+
+# Generate config.jam
+rm -f config.jam
+cat << EOF > config.jam
+CC       = $CC ;
+C++      = $CXX ;
+LINK     = $CXX ;
+CCFLAGS  = $CCFLAGS ;
+C++FLAGS = $CCFLAGS ;
+OPTIM    = $OPTIM ;
+DEFINES  = $DEFINES ;
+LINKLIBS = $LINKLIBS ;
+EOF
+
+echo
+echo "To build Hyperion, run:"
+echo " './jam'"
+echo

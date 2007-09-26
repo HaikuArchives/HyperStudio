@@ -1,0 +1,18 @@
+
+SubDir TOP ;
+
+CORE_SRC = core/Track.cpp core/TimeLine.cpp core/Project.cpp ;
+
+BEOS_BIN = Hyperion ;
+BEOS_SRC = gui/main.cpp gui/HyperionApp.cpp gui/MainWindow.cpp gui/AboutWindow.cpp gui/AddAudioTrackWindow.cpp gui/NewProjectWindow.cpp gui/AppIconMenu.cpp gui/project/TimeLineView.cpp gui/project/TrackView.cpp gui/project/ProjectView.cpp gui/project/TracksView.cpp
+
+if $(OS) = BEOS
+{
+	Main Hyperion : $(BEOS_SRC) ; 
+	BeOSPackage Hyperion-$(HYPERION_VERSION)-$(BEOS_PLATFORM).zip : Hyperion ; 
+	HYPERION_PACKAGES += Hyperion-$(HYPERION_VERSION)-$(BEOS_PLATFORM).zip ;
+}
+
+# Packages
+NotFile package ;
+Depends package : $(HYPERION_PACKAGES) ;
