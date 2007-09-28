@@ -14,6 +14,7 @@
 
 #include "AboutWindow.h"
 #include "Hyperion.h"
+#include "HyperionDebug.h"
 #include "HyperionApp.h"
 #include "MainWindow.h"
 

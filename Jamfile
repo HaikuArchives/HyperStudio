@@ -4,13 +4,21 @@ SubDir TOP ;
 CORE_SRC = core/Track.cpp core/TimeLine.cpp core/Project.cpp ;
 
 BEOS_BIN = Hyperion ;
-BEOS_SRC = gui/main.cpp gui/HyperionApp.cpp gui/MainWindow.cpp gui/AboutWindow.cpp gui/AddAudioTrackWindow.cpp gui/NewProjectWindow.cpp gui/AppIconMenu.cpp gui/project/TimeLineView.cpp gui/project/TrackView.cpp gui/project/ProjectView.cpp gui/project/TracksView.cpp
+#BEOS_SRC = [ glob-tree gui/ : *.cpp ] ;
+BEOS_SRC = gui/AboutWindow.cpp gui/AddAudioTrackWindow.cpp gui/AppIconMenu.cpp gui/HyperionApp.cpp gui/MainWindow.cpp gui/NewProjectWindow.cpp gui/main.cpp gui/project/ProjectView.cpp gui/project/TimeLineView.cpp gui/project/TrackView.cpp gui/project/TracksView.cpp ;
 
-if $(OS) = BEOS
+if $(OS) = BeOS
 {
-	Main Hyperion : $(BEOS_SRC) ; 
-	BeOSPackage Hyperion-$(HYPERION_VERSION)-$(BEOS_PLATFORM).zip : Hyperion ; 
-	HYPERION_PACKAGES += Hyperion-$(HYPERION_VERSION)-$(BEOS_PLATFORM).zip ;
+	Main Hyperion : $(CORE_SRC) $(BEOS_SRC) ; 
+	BeOSPackage Hyperion-$(HYPERION_VERSION)-$(OS).zip : Hyperion ; 
+	HYPERION_PACKAGES += Hyperion-$(HYPERION_VERSION)-$(OS).zip ;
+}
+
+if $(OS) = Haiku
+{
+	Main Hyperion : $(CORE_SRC) $(BEOS_SRC) ; 
+	BeOSPackage Hyperion-$(HYPERION_VERSION)-$(OS).zip : Hyperion ; 
+	HYPERION_PACKAGES += Hyperion-$(HYPERION_VERSION)-$(OS).zip ;
 }
 
 # Packages

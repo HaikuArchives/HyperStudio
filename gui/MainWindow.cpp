@@ -14,7 +14,7 @@
 #include "AddAudioTrackWindow.h"
 #include "AppIconMenu.h"
 #include "Exception.h"
-#include "Hyperion.h"
+#include "HyperionDebug.h"
 #include "HyperionConsts.h"
 #include "MainWindow.h"
 #include "NewProjectWindow.h"
@@ -115,6 +115,11 @@ MainWindow::MessageReceived(BMessage* msg)
 		break;
 	case kNewProjectCanceled:
 		fNewPrjWindow = NULL;
+		break;
+
+	// View messages
+	case kScaleChanged:
+		fPrjView->Rescale();
 		break;
 
 	// Default handler

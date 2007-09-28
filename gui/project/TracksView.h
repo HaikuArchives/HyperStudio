@@ -13,6 +13,7 @@ public:
 	TracksView(BRect frame);
 	virtual ~TracksView();
 
+	virtual void Draw(BRect updateRect);
 	virtual void AttachedToWindow();
 	virtual void FrameResized(float width, float height);
 	virtual void MessageReceived(BMessage *msg);

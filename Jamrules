@@ -3,13 +3,12 @@ include config.jam ;
 
 if ! $(DEFINES)
 {
-	Exit "Please run ./configure first.";
+	Exit "Please run ./configure first." ;
 }
 
 HYPERION_VERSION = 0.0.0 ;
 HYPERION_BUILD   = 2007092600 ;
 DEFINES         += HYPERION_VERSION=\\\"$(HYPERION_VERSION)\\\" HYPERION_BUILD=$(HYPERION_BUILD) ;
-RM               = rm -rf ;
 
 rule BeOSPackage
 {

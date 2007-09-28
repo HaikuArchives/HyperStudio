@@ -1,6 +1,7 @@
 
 #include <Alert.h>
 #include <ScrollView.h>
+#include <Slider.h>
 #include <String.h>
 
 #include "Project.h"
@@ -9,20 +10,19 @@
 #include "TracksView.h"
 #include "Track.h"
 
+#define DEFAULT_SCALE 25
+
 ProjectView::ProjectView(BRect frame)
 	: BView(frame, "ProjectView",
 	        B_FOLLOW_ALL,
 	        B_FULL_UPDATE_ON_RESIZE),
-	  fScale(25),
 	  fPointer(0)
 {
 	// Create a new empty project
 	fProject = new Project;
 
 	// Set background color
-	rgb_color bg_color = tint_color(ui_color(B_PANEL_BACKGROUND_COLOR),
-	                                B_DARKEN_2_TINT);
-	SetViewColor(bg_color);
+	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 
 	BRect frame = Bounds();
 
@@ -34,14 +34,24 @@ ProjectView::ProjectView(BRect frame)
 
 	// Add tracks view
 	frame.top = fTimeLineView->Bounds().Height();
-	frame.bottom = Bounds().Height();
 	frame.right -= B_V_SCROLL_BAR_WIDTH;
 	frame.bottom -= B_H_SCROLL_BAR_HEIGHT;
 	fTracksView = new TracksView(frame);
-	AddChild(new BScrollView("TracksScrollView", fTracksView,
-	                         B_FOLLOW_ALL_SIDES, B_WILL_DRAW,
-	                         true, true, B_NO_BORDER));                       
-	//fTracksView->ResizeToPreferred();
+	fTracksScrollView = new BScrollView("TracksScrollView", fTracksView,
+		B_FOLLOW_ALL_SIDES, 0, true, true, B_NO_BORDER); 
+	AddChild(fTracksScrollView);
+
+	// Add scale slider
+	frame.left = 0.0f;
+	frame.top = Bounds().Height() - B_H_SCROLL_BAR_HEIGHT;
+	frame.right = 127.0f;
+	frame.bottom = Bounds().Height();
+	fSlider = new BSlider(frame, "ScaleSlider", NULL,
+		new BMessage(kScaleChanged), 10, 100, B_TRIANGLE_THUMB);
+	fSlider->SetValue(DEFAULT_SCALE);
+	fSlider->SetHashMarks(B_HASH_MARKS_TOP);
+	fSlider->SetHashMarkCount(10);
+	AddChild(fSlider);
 }
 
 ProjectView::~ProjectView()
@@ -49,4 +59,17 @@ ProjectView::~ProjectView()
 	delete fTimeLineView;
 	delete fTracksView;
 	delete fProject;
+}
+
+uint32
+ProjectView::Scale() const
+{
+	return fSlider->Value();
+}
+
+void
+ProjectView::Rescale()
+{
+	fTimeLineView->Invalidate();
+	fTracksView->Invalidate();
 }

@@ -5,7 +5,7 @@
 #include <Message.h>
 #include <String.h>
 
-#include "Hyperion.h"
+#include "HyperionDebug.h"
 #include "Exception.h"
 #include "Project.h"
 #include "TimeLine.h"

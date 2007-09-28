@@ -40,6 +40,7 @@ TimeLineView::Draw(BRect updateRect)
 
 	rgb_color white = (rgb_color){ 255, 255, 255 };
 	rgb_color small_color = tint_color(white, B_DARKEN_1_TINT);
+	rgb_color red = (rgb_color){ 255, 0, 0 };
 
 	// Get scale from project settings
 	ProjectView *parent = dynamic_cast<ProjectView*>(Parent());
@@ -48,6 +49,7 @@ TimeLineView::Draw(BRect updateRect)
 	int32 start = (int32(updateRect.left / scale) ) * scale;
 	int32 end = (int32(updateRect.right / scale) + 1) * scale;
 	int32 nb = (end - start) / scale * 2 + 3;
+	int32 height = Bounds().IntegerHeight();
 
 	// Draw if the rectangle is large enough
 	if (nb <= 0)
@@ -57,8 +59,8 @@ TimeLineView::Draw(BRect updateRect)
 	BeginLineArray(nb);
 	for (int32 i = start; i <= end; i += scale)
 	{
-		AddLine(BPoint(i, 0), BPoint(i, 10), white);
-		AddLine(BPoint(i + scale / 2, 0), BPoint(i + scale / 2, 5), small_color);
+		AddLine(BPoint(i, 0), BPoint(i, height), white);
+		AddLine(BPoint(i + scale / 2, height), BPoint(i + scale / 2, height - 5), small_color);
 	}
 	EndLineArray();
 

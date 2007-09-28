@@ -2,18 +2,19 @@
 
 CC="gcc"
 CXX="g++"
-CCFLAGS="$CCFLAGS -Wall -g"
+CCFLAGS="$CCFLAGS -Wall -g -Icore -Igui -Igui/project"
 OPTIM="$OPTIM -O2"
 LINKLIBS=""
 SYSTEM="`uname -s`"
 RELEASE="`uname -r`"
+OS="$SYSTEM"
 
 # System-specific flags
 case $SYSTEM in
 	BeOS)
 		CCFLAGS="$CCFLAGS -Wno-multichar"
 		DEFINES="$DEFINES SYS_BEOS"
-		LINKLIBS="$LINKLIBS -be -ltracker"
+		LINKLIBS="$LINKLIBS -lroot -lstdc++.r4 -lbe -lmedia -ltranslation -ltracker"
 		case $RELEASE in
 			6.0|5.0.4) # Zeta or R5 / BONE beta 7
 				SYSTEM="$SYSTEM / BONE"
@@ -32,7 +33,7 @@ case $SYSTEM in
 	Haiku)
 		CCFLAGS="$CCFLAGS -Wno-multichar"
 		DEFINES="$DEFINES SYS_HAIKU BEOS_PLATFORM=Haiku"
-		LINKLIBS="$LINKLIBS -be -ltracker"
+		LINKLIBS="$LINKLIBS -lroot -lstdc++.r4 -lbe -lmedia -ltranslation -ltracker"
 	;;
 	*)
 		echo "$SYSTEM is an unsupported operating system"
@@ -68,9 +69,10 @@ C++FLAGS = $CCFLAGS ;
 OPTIM    = $OPTIM ;
 DEFINES  = $DEFINES ;
 LINKLIBS = $LINKLIBS ;
+OS       = $OS ;
 EOF
 
 echo
 echo "To build Hyperion, run:"
-echo " './jam'"
+echo "  jam"
 echo

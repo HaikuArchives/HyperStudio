@@ -4,9 +4,13 @@
 
 #include <View.h>
 
+class BScrollView;
+class BSlider;
 class Project;
 class TimeLineView;
 class TracksView;
+
+const uint32 kScaleChanged = 'slch';
 
 class ProjectView : public BView
 {
@@ -16,17 +20,18 @@ public:
 
 	Project* CurrentProject() const { return fProject; }
 
-	uint32 Scale() const { return fScale; }
+	uint32 Scale() const;
 	bigtime_t Pointer() const { return fPointer; }
 
-private:
-	void InitChilds();
+	void Rescale();
 
+private:
 	Project* fProject;
-	uint32 fScale;
 	bigtime_t fPointer;
-	TimeLineView *fTimeLineView;
-	TracksView *fTracksView;
+	TimeLineView* fTimeLineView;
+	TracksView* fTracksView;
+	BScrollView* fTracksScrollView;
+	BSlider* fSlider;
 };
 
 #endif // PROJECT_VIEW_H
