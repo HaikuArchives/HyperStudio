@@ -39,7 +39,7 @@ NewProjectWindow::NewProjectWindow(BLooper* Looper)
 	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	AddChild(view);
 
-	rect = BRect(4.0f, 6.0f, 0.0f, 0.0f);
+	rect = BRect(4.0f, 4.0f, 0.0f, 0.0f);
 	BStringView* label1 = new BStringView(rect, "CollectionLabel", "Collection");
 	label1->ResizeToPreferred();
 	view->AddChild(label1);
@@ -52,7 +52,7 @@ NewProjectWindow::NewProjectWindow(BLooper* Looper)
 	view->AddChild(scrollCollection);
 
 	rect = scrollCollection->Frame();
-	rect = BRect(rect.Width() + 8.0f, 6.0f, 0.0f, 0.0f);
+	rect = BRect(rect.Width() + 8.0f, 4.0f, 0.0f, 0.0f);
 	BStringView* label2 = new BStringView(rect, "TemplateLabel", "Template");
 	label2->ResizeToPreferred();
 	view->AddChild(label2);
@@ -112,7 +112,7 @@ NewProjectWindow::CenteredRect()
 {
 	BScreen screen;
 	BRect screenFrame = screen.Frame();
-	BRect frame = BRect(0.0f, 0.0f, 345.0f, 230.0f);
+	BRect frame = BRect(0.0f, 0.0f, 345.0f, 226.0f);
 
 	frame.OffsetTo(screenFrame.left + (screenFrame.Width() - frame.Width()) / 2,
 	               screenFrame.top + (screenFrame.Height() - frame.Height()) /2); 

@@ -40,7 +40,6 @@ TimeLineView::Draw(BRect updateRect)
 
 	rgb_color white = (rgb_color){ 255, 255, 255 };
 	rgb_color small_color = tint_color(white, B_DARKEN_1_TINT);
-	rgb_color red = (rgb_color){ 255, 0, 0 };
 
 	// Get scale from project settings
 	ProjectView *parent = dynamic_cast<ProjectView*>(Parent());
