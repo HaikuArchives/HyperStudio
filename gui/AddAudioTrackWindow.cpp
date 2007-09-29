@@ -109,7 +109,7 @@ AddAudioTrackWindow::PopulateMenu(BPopUpMenu* menu)
 		BMessage* msg = new BMessage(kAddAudioTrackSelected);
 		msg->AddInt32("channels", channels[i]);
 		BMenuItem* item = new BMenuItem(labels[i], msg);
-		item->SetMarked(true);
+		item->SetMarked((i == 0));
 		menu->AddItem(item);
 	}
 }

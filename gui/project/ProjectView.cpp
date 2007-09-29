@@ -4,11 +4,11 @@
 #include <Slider.h>
 #include <String.h>
 
-#include "Project.h"
+#include "core/Project.h"
 #include "ProjectView.h"
 #include "TimeLineView.h"
 #include "TracksView.h"
-#include "Track.h"
+#include "core/Track.h"
 
 #define DEFAULT_SCALE 25
 

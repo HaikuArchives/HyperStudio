@@ -16,14 +16,14 @@ public:
 	virtual void Draw(BRect updateRect);
 	virtual void AttachedToWindow();
 	virtual void FrameResized(float width, float height);
-	virtual void MessageReceived(BMessage *msg);
 
 	void AddTrack(Track &track);
 
 private:
+	void GetMaxSize(float* width, float* height);
 	void FixupScrollBars();
 
-	BList *fTrackViews;
+	BList *fViews;
 	BRect fLastSlot;
 };
 

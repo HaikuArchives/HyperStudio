@@ -13,13 +13,13 @@
 
 #include "AddAudioTrackWindow.h"
 #include "AppIconMenu.h"
-#include "Exception.h"
-#include "HyperionDebug.h"
+#include "core/Exception.h"
+#include "core/HyperionDebug.h"
 #include "HyperionConsts.h"
 #include "MainWindow.h"
 #include "NewProjectWindow.h"
-#include "Project.h"
-#include "ProjectView.h"
+#include "core/Project.h"
+#include "gui/project/ProjectView.h"
 
 MainWindow::MainWindow(BRect frame)
 	: BWindow(frame, "HyperionWindow",

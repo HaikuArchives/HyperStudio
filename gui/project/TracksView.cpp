@@ -4,7 +4,7 @@
 #include <ScrollBar.h>
 
 #include "ProjectView.h"
-#include "Track.h"
+#include "core/Track.h"
 #include "TracksView.h"
 #include "TrackView.h"
 
@@ -12,35 +12,42 @@ TracksView::TracksView(BRect frame)
 	: BView(frame, "TracksView", B_FOLLOW_ALL_SIDES, B_WILL_DRAW | B_FRAME_EVENTS)
 {
 	// Initialize memebers
-	fTrackViews = new BList;
+	fViews = new BList;
 	fLastSlot = BRect(0.0f, 0.0f, Bounds().Width()*4, 128.0f);
 }
 
 TracksView::~TracksView()
 {
-	// TODO: delete all views
-	delete fTrackViews;
+	TrackView* item;
+	for (int32 i = 0; (item = (TrackView*)fViews->ItemAt(i)); i++)
+		delete item;
+	delete fViews;
 }
 
 void
 TracksView::Draw(BRect updateRect)
 {
 	rgb_color bg_color = tint_color(ui_color(B_PANEL_BACKGROUND_COLOR),
-	                                B_LIGHTEN_1_TINT);
-	rgb_color white = (rgb_color){ 255, 255, 255 };
+	                                B_DARKEN_2_TINT);
+	rgb_color line_color = tint_color(ui_color(B_PANEL_BACKGROUND_COLOR),
+	                                  B_DARKEN_3_TINT);
 
 	// Update background
 	SetLowColor(bg_color);
-	FillRect(updateRect, B_SOLID_LOW);
+	FillRect(Bounds(), B_SOLID_LOW);
 
 	// Get scale from project settings
 	ProjectView *parent = dynamic_cast<ProjectView*>(Parent()->Parent());
 	uint32 scale = parent->Scale();
 
-	int32 start = (int32(updateRect.left / scale) ) * scale;
-	int32 end = (int32(updateRect.right / scale) + 1) * scale;
+	// Get maximum size
+	float maxWidth, maxHeight;
+	GetMaxSize(&maxWidth, &maxHeight);
+
+	// Calculate start and end
+	int32 start = (int32(Frame().left / scale) ) * scale;
+	int32 end = (int32(maxWidth / scale) + 1) * scale;
 	int32 nb = (end - start) / scale * 2 + 3;
-	int32 height = Bounds().IntegerHeight(); // FIXME: max height
 
 	// Draw if the rectangle is large enough
 	if (nb <= 0)
@@ -51,9 +58,9 @@ TracksView::Draw(BRect updateRect)
 	for (int32 i = start; i <= end; i += scale)
 	{
 		AddLine(BPoint(i, 0),
-		        BPoint(i, height), white);
+		        BPoint(i, maxHeight), line_color);
 		AddLine(BPoint(i + scale / 2, 0),
-		        BPoint(i + scale / 2, height), white);
+		        BPoint(i + scale / 2, maxHeight), line_color);
 	}
 	EndLineArray();
 }
@@ -71,22 +78,25 @@ TracksView::FrameResized(float width, float height)
 }
 
 void
-TracksView::MessageReceived(BMessage *msg)
-{
-	BView::MessageReceived(msg);
-}
-
-void
 TracksView::AddTrack(Track &track)
 {
 	// Add track view
 	TrackView *view = new TrackView(fLastSlot, track);
-	fTrackViews->AddItem(view);
+	fViews->AddItem(view);
 	AddChild(view);
 
 	// Update last slot position
-	fLastSlot.top = fLastSlot.bottom + fTrackViews->CountItems();
-	fLastSlot.bottom += 128.0f + fTrackViews->CountItems();
+	fLastSlot.top = fLastSlot.bottom + fViews->CountItems();
+	fLastSlot.bottom += 128.0f + fViews->CountItems();
+}
+
+void
+TracksView::GetMaxSize(float* width, float* height)
+{
+	if (width)
+		*width = Bounds().Width() * 2.0f;
+	if (height)
+		*height = Bounds().Height() * 2.0f;
 }
 
 void
@@ -99,8 +109,8 @@ TracksView::FixupScrollBars()
 	float height = Bounds().Height();
 
 	// Get max size
-	float maxWidth = width * 2.0f;
-	float maxHeight = height * 2.0f;
+	float maxWidth, maxHeight;
+	GetMaxSize(&maxWidth, &maxHeight);
 
 	// Proportional size
 	float propWidth = width / maxWidth;
