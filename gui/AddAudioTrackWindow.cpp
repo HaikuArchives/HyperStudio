@@ -101,19 +101,15 @@ void
 AddAudioTrackWindow::PopulateMenu(BPopUpMenu* menu)
 {
 	// TODO: Get the maximum number of channels supported by the output device
-	BMessage* msg;
-	BMenuItem* item;
 
-	msg = new BMessage(kAddAudioTrackSelected);
-	msg->AddInt32("channels", 1);
-	item = new BMenuItem("Mono", msg);
-	item->SetMarked(true);
-	menu->AddItem(item);
-	delete msg;
+	const char* labels[] = { "Mono", "Stereo" };
+	int32 channels[] = { 1, 2 };
 
-	msg = new BMessage(kAddAudioTrackSelected);
-	msg->AddInt32("channels", 2);
-	item = new BMenuItem("Stereo", msg);
-	menu->AddItem(item);
-	delete msg;
+	for (int i = 0; i < 2; i++) {
+		BMessage* msg = new BMessage(kAddAudioTrackSelected);
+		msg->AddInt32("channels", channels[i]);
+		BMenuItem* item = new BMenuItem(labels[i], msg);
+		item->SetMarked(true);
+		menu->AddItem(item);
+	}
 }
