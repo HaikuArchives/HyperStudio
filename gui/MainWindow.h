@@ -11,6 +11,7 @@ class BMenuItem;
 class BFilePanel;
 class ProjectView;
 class NewProjectWindow;
+class AddAudioTrackWindow;
 
 class MainWindow : public BWindow
 {
@@ -34,6 +35,7 @@ private:
 	BFilePanel* fSavePanel;
 	ProjectView* fPrjView;
 	NewProjectWindow* fNewPrjWindow;
+	AddAudioTrackWindow* fAddAudioTrackWindow;
 };
 
 #endif // MAIN_WINDOW_H

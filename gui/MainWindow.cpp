@@ -28,7 +28,8 @@ MainWindow::MainWindow(BRect frame)
 	          B_ASYNCHRONOUS_CONTROLS),
 	  fOpenPanel(NULL),
 	  fSavePanel(NULL),
-	  fNewPrjWindow(NULL)
+	  fNewPrjWindow(NULL),
+	  fAddAudioTrackWindow(NULL)
 {
 	// Create menus
 	InitMenus();
@@ -99,10 +100,10 @@ MainWindow::MessageReceived(BMessage* msg)
 	case MENU_PROJECT_CLOSE:
 		Quit();
 		break;
-	case MENU_TRACKS_ADDAUDIO: {
-			AddAudioTrackWindow* win = new AddAudioTrackWindow();
-			win->Show();
-		}
+	case MENU_TRACKS_ADDAUDIO:
+		if (!fAddAudioTrackWindow)
+			fAddAudioTrackWindow = new AddAudioTrackWindow(this);
+		fAddAudioTrackWindow->Show();
 		break;
 	case MENU_TRACKS_ADDMIDI:
 		break;
@@ -115,6 +116,15 @@ MainWindow::MessageReceived(BMessage* msg)
 		break;
 	case kNewProjectCanceled:
 		fNewPrjWindow = NULL;
+		break;
+	case kAddAudioTrackSelected: {
+			int32 channels = 0;
+			if (msg->FindInt32("channels", &channels) == B_OK)
+				fPrjView->AddAudioTrack((uint32)channels);
+		}
+		break;
+	case kAddAudioTrackCanceled:
+		fAddAudioTrackWindow = NULL;
 		break;
 
 	// View messages

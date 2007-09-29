@@ -73,3 +73,10 @@ ProjectView::Rescale()
 	fTimeLineView->Invalidate();
 	fTracksView->Invalidate();
 }
+
+void
+ProjectView::AddAudioTrack(uint32 channels)
+{
+	Track track;
+	fTracksView->AddTrack(track);
+}

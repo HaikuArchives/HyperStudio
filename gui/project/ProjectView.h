@@ -25,6 +25,8 @@ public:
 
 	void Rescale();
 
+	void AddAudioTrack(uint32 channels);
+
 private:
 	Project* fProject;
 	bigtime_t fPointer;

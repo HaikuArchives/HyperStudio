@@ -4,17 +4,24 @@
 
 #include <Window.h>
 
-class BMenu;
+class BPopUpMenu;
 
-const uint32 kAddAudioTrack = 'aatw';
+const uint32 kAddAudioTrackSelected = '_aat';
+const uint32 kAddAudioTrackCanceled = '_aac';
 
 class AddAudioTrackWindow : public BWindow
 {
 public:
-	AddAudioTrackWindow();
+	AddAudioTrackWindow(BLooper* looper);
+
+	void MessageReceived(BMessage* msg);
+	bool QuitRequested();
 
 private:
-	void _PopulateMenu(BMenu* menu);
+	void PopulateMenu(BPopUpMenu* menu);
+
+	BLooper* fLooper;
+	int32 fLastChannels;
 };
 
 #endif // ADD_AUDIO_TRACK_WINDOW_H
