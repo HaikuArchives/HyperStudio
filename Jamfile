@@ -1,4 +1,6 @@
 
+SubDir TOP ;
+
 # Application version and defines
 VERSION  = 0.0.0 ;
 BUILD    = 2007092600 ;
@@ -14,41 +16,30 @@ OPTIMIZE = FULL ;
 #	ALL = enable all warnings
 WARNINGS = ALL ;
 
-# Source code
-CORE_SRC = libcore/Project.cpp
-	libcore/TimeLine.cpp
-	libcore/Track.cpp ;
-BEOS_SRC = hyperion/beos/main.cpp
-	hyperion/beos/AboutWindow.cpp
-	hyperion/beos/AddAudioTrackWindow.cpp
-	hyperion/beos/AppIconMenu.cpp
-	hyperion/beos/HyperionApp.cpp
-	hyperion/beos/MainWindow.cpp
-	hyperion/beos/NewProjectWindow.cpp
-	hyperion/beos/project/ProjectView.cpp
-	#hyperion/beos/project/ScaleSlider.cpp
-	hyperion/beos/project/TimeLineView.cpp
-	hyperion/beos/project/TrackView.cpp
-	hyperion/beos/project/TracksPanelsView.cpp
-	hyperion/beos/project/TracksView.cpp ;
-
-# Core library
-Library libcore.a : $(CORE_SRC) ;
-if ( $(FAMILY) = BEOS )
-{
-	LINKLIBS on libcore.a = -lbe -lstdc++.r4 ;
-}
-
 # Main executable
 if ( $(FAMILY) = BEOS )
 {
+	# Source code
+	BEOS_SRC =
+beos/main.cpp
+beos/AboutWindow.cpp
+beos/AddAudioTrackWindow.cpp
+beos/AppIconMenu.cpp
+beos/HyperionApp.cpp
+beos/MainWindow.cpp
+beos/NewProjectWindow.cpp
+beos/project/ProjectView.cpp
+#beos/project/ScaleSlider.cpp
+beos/project/TimeLineView.cpp
+beos/project/TrackView.cpp
+beos/project/TracksPanelsView.cpp
+beos/project/TracksView.cpp ;
+
 	Main Hyperion : $(BEOS_SRC) ;
-	Depends Hyperion : libcore.a ;
-	CreateResource hyperion/beos/Hyperion.rsrc : Hyperion.rdef ;
-	AddResources Hyperion : $(RSRCS) ;
+	CreateResource $(TOP)/beos/Hyperion.rsrc : $(TOP)/beos/Hyperion.rdef ;
+	AddResources Hyperion : $(TOP)/beos/Hyperion.rsrc ;
 	MimeSet Hyperion ;
-	LINKLIBS on Hyperion = -lbe -stdc++.r4 -ltracker libcore.a ;
-	RSRCS on Hyperion = hyperion/beos/Hyperion.rsrc ;
+	LINKLIBS on Hyperion = -lbe -stdc++.r4 -ltracker $(TOP)/libcore/libcore.a ;
 }
 
-# Build everything
+SubInclude TOP libcore ;

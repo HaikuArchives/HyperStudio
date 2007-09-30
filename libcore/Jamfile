@@ -1,0 +1,10 @@
+
+SubDir TOP libcore ;
+
+SRC =
+Project.cpp
+TimeLine.cpp
+Track.cpp ;
+
+Library libcore.a : $(SRC) ;
+LINKLIBS = -lbe -lstdc++.r4 ;
