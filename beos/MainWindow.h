@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
@@ -13,29 +20,28 @@ class ProjectView;
 class NewProjectWindow;
 class AddAudioTrackWindow;
 
-class MainWindow : public BWindow
-{
-public:
-	MainWindow(BRect frame);
-	virtual ~MainWindow();
+class MainWindow : public BWindow {
+	public:
+		MainWindow(BRect frame);
+		virtual ~MainWindow();
 
-	virtual bool QuitRequested();
-	virtual void MessageReceived(BMessage* msg);
+		virtual bool QuitRequested();
+		virtual void MessageReceived(BMessage* msg);
 
-private:
-	void _RefsReceived(BMessage* msg);
-	void _SaveRequested(BMessage* msg);
-	void InitMenus();
-	void InitViews();
-	bool CloseProject();
+	private:
+		void _RefsReceived(BMessage* msg);
+		void _SaveRequested(BMessage* msg);
+		void InitMenus();
+		void InitViews();
+		bool CloseProject();
 
-	BMenuBar* fMenuBar;
-	BMenu* fRecentMenu;
-	BFilePanel* fOpenPanel;
-	BFilePanel* fSavePanel;
-	ProjectView* fPrjView;
-	NewProjectWindow* fNewPrjWindow;
-	AddAudioTrackWindow* fAddAudioTrackWindow;
+		BMenuBar* fMenuBar;
+		BMenu* fRecentMenu;
+		BFilePanel* fOpenPanel;
+		BFilePanel* fSavePanel;
+		ProjectView* fPrjView;
+		NewProjectWindow* fNewPrjWindow;
+		AddAudioTrackWindow* fAddAudioTrackWindow;
 };
 
 #endif // MAIN_WINDOW_H

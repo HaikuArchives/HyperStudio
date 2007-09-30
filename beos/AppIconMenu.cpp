@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #include <AppFileInfo.h>
 #include <Application.h>
@@ -8,8 +15,8 @@
 
 AppIconMenu::AppIconMenu(BBitmap* icon, BMenu* menu)
 	: BMenuItem(menu),
-	  fBounds(),
-	  fLabel(NULL)
+	fBounds(),
+	fLabel(NULL)
 {
 	if (icon) {
 		fBounds = icon->Bounds();
@@ -20,8 +27,8 @@ AppIconMenu::AppIconMenu(BBitmap* icon, BMenu* menu)
 
 AppIconMenu::AppIconMenu(BMenu* menu)
 	: BMenuItem(menu),
-	  fBounds(0.0f, 0.0f, 15.0f, 15.0f),
-	  fLabel(NULL)
+	fBounds(0.0f, 0.0f, 15.0f, 15.0f),
+	fLabel(NULL)
 {
 	app_info info;
 	if (be_app->GetAppInfo(&info) == B_NO_ERROR) {
@@ -59,7 +66,6 @@ void AppIconMenu::DrawContent()
 		Menu()->SetDrawingMode(B_OP_OVER);
 
 		float width, height;
-
 		Menu()->GetPreferredSize(&width, &height);
 
 		BRect destBounds = fBounds;

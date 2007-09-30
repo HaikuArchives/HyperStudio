@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #include <Button.h>
 #include <Entry.h>
@@ -15,31 +22,28 @@
 
 const uint32 kTemplateInvoked = 'tmpl';
 
-class TemplateListItem : public BStringItem
-{
-public:
-	TemplateListItem(const char* name, const char* filename)
-		: BStringItem(name),
-		  fFileName(filename) {}
+class TemplateListItem : public BStringItem {
+	public:
+		TemplateListItem(const char* name, const char* filename)
+			: BStringItem(name),
+			fFileName(filename) {}
 
-	const char* FileName() const { return fFileName.String(); }
+		const char* FileName() const { return fFileName.String(); }
 
-private:
-	BString fFileName;
+	private:
+		BString fFileName;
 };
 
 NewProjectWindow::NewProjectWindow(BLooper* Looper)
 	: BWindow(CenteredRect(), "New...", B_TITLED_WINDOW_LOOK, B_MODAL_APP_WINDOW_FEEL,
-	          B_NOT_RESIZABLE | B_NOT_ZOOMABLE | B_ASYNCHRONOUS_CONTROLS),
-	  fLooper(Looper)
+		B_NOT_RESIZABLE | B_NOT_ZOOMABLE | B_ASYNCHRONOUS_CONTROLS),
+	fLooper(Looper)
 {
-	BRect rect;
-
 	BView* view = new BView(Bounds(), "NewProjectView", B_FOLLOW_ALL, B_WILL_DRAW);
 	view->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	AddChild(view);
 
-	rect = BRect(4.0f, 4.0f, 0.0f, 0.0f);
+	BRect rect = BRect(4.0f, 4.0f, 0.0f, 0.0f);
 	BStringView* label1 = new BStringView(rect, "CollectionLabel", "Collection");
 	label1->ResizeToPreferred();
 	view->AddChild(label1);
@@ -73,30 +77,29 @@ NewProjectWindow::NewProjectWindow(BLooper* Looper)
 void
 NewProjectWindow::MessageReceived(BMessage* msg)
 {
-	switch (msg->what)
-	{
-	case kTemplateInvoked: {
-			int index = fTemplateListView->CurrentSelection();
-			if (index < 0)
-				break;
+	switch (msg->what) {
+		case kTemplateInvoked: {
+				int index = fTemplateListView->CurrentSelection();
+				if (index < 0)
+					break;
 
-			TemplateListItem* item =
-				(TemplateListItem*)fTemplateListView->ItemAt(index);
+				TemplateListItem* item =
+					(TemplateListItem*)fTemplateListView->ItemAt(index);
 			
-			// Post message with the selected template to the main window
-			BMessage* m = new BMessage(kNewProjectSelected);
-			if (item->FileName())
-			{
-				entry_ref ref;
-				get_ref_for_path(item->FileName(), &ref);
-				m->AddRef("ref", &ref);
+				// Post message with the selected template to the main window
+				BMessage* m = new BMessage(kNewProjectSelected);
+				if (item->FileName())
+				{
+					entry_ref ref;
+					get_ref_for_path(item->FileName(), &ref);
+					m->AddRef("ref", &ref);
+				}
+				fLooper->PostMessage(m);
 			}
-			fLooper->PostMessage(m);
-		}
-		break;
-	default:
-		BWindow::MessageReceived(msg);
-		break;
+			break;
+		default:
+			BWindow::MessageReceived(msg);
+			break;
 	}
 }
 

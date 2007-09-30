@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #include <Alert.h>
 #include <Application.h>
@@ -22,14 +29,12 @@
 #include "project/ProjectView.h"
 
 MainWindow::MainWindow(BRect frame)
-	: BWindow(frame, "HyperionWindow",
-	          B_DOCUMENT_WINDOW_LOOK,
-	          B_NORMAL_WINDOW_FEEL,
-	          B_ASYNCHRONOUS_CONTROLS),
-	  fOpenPanel(NULL),
-	  fSavePanel(NULL),
-	  fNewPrjWindow(NULL),
-	  fAddAudioTrackWindow(NULL)
+	: BWindow(frame, "HyperionWindow", B_DOCUMENT_WINDOW_LOOK, B_NORMAL_WINDOW_FEEL,
+		B_ASYNCHRONOUS_CONTROLS),
+	fOpenPanel(NULL),
+	fSavePanel(NULL),
+	fNewPrjWindow(NULL),
+	fAddAudioTrackWindow(NULL)
 {
 	// Create menus
 	InitMenus();

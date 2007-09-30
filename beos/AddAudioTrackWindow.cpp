@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #include <Button.h>
 #include <MenuField.h>
@@ -17,11 +24,10 @@ const uint32 kBorderSpace = 5;
 const uint32 kItemSpace = 7;
 
 AddAudioTrackWindow::AddAudioTrackWindow(BLooper* looper)
-	: BWindow(BRect(0.0f, 0.0f, 1.0f, 1.0f), "Add audio track",
-	          B_TITLED_WINDOW_LOOK, B_MODAL_APP_WINDOW_FEEL,
-	          B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
-	  fLooper(looper),
-	  fLastChannels(0)
+	: BWindow(BRect(0.0f, 0.0f, 1.0f, 1.0f), "Add audio track", B_TITLED_WINDOW_LOOK,
+		B_MODAL_APP_WINDOW_FEEL, B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS),
+	fLooper(looper),
+	fLastChannels(0)
 {
 	// Add the main view
 	BView* view = new BView(Bounds(), "AddAudioTrackView", B_FOLLOW_ALL, B_WILL_DRAW);
@@ -68,25 +74,24 @@ AddAudioTrackWindow::AddAudioTrackWindow(BLooper* looper)
 void
 AddAudioTrackWindow::MessageReceived(BMessage* msg)
 {
-	switch (msg->what)
-	{
-	case kAddAudioTrackConfirm: {
-			BMessage* m = new BMessage(kAddAudioTrackSelected);
-			if (m->AddInt32("channels", fLastChannels) == B_OK) {
-				fLooper->PostMessage(m);
-				PostMessage(B_QUIT_REQUESTED);
+	switch (msg->what) {
+		case kAddAudioTrackConfirm: {
+				BMessage* m = new BMessage(kAddAudioTrackSelected);
+				if (m->AddInt32("channels", fLastChannels) == B_OK) {
+					fLooper->PostMessage(m);
+					PostMessage(B_QUIT_REQUESTED);
+				}
 			}
-		}
-		break;
-	case kAddAudioTrackCanceled:
-		PostMessage(B_QUIT_REQUESTED);
-		break;
-	case kAddAudioTrackSelected:
-		msg->FindInt32("channels", &fLastChannels);
-		break;
-	default:
-		BWindow::MessageReceived(msg);
-		break;
+			break;
+		case kAddAudioTrackCanceled:
+			PostMessage(B_QUIT_REQUESTED);
+			break;
+		case kAddAudioTrackSelected:
+			msg->FindInt32("channels", &fLastChannels);
+			break;
+		default:
+			BWindow::MessageReceived(msg);
+			break;
 	}
 }
 

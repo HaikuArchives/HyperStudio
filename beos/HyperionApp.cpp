@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #include <AppFileInfo.h>
 #include <Autolock.h>
@@ -20,8 +27,8 @@
 
 HyperionApp::HyperionApp()
 	: BApplication(HYPERION_SIGNATURE),
-	  fWins(new BList),
-	  fFirstWindow(NewWindow())
+	fWins(new BList),
+	fFirstWindow(NewWindow())
 {
 	// Installing MIME type
 	BMimeType projectType("application/x-hyperion");

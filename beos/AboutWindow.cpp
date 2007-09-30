@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #include <Alert.h>
 #include <Font.h>
@@ -26,14 +33,12 @@ AboutWindow::AboutWindow(char* appName, int32 firstCopyrightYear,
 	text << "\n\nCopyright " B_UTF8_COPYRIGHT " ";
 	text << firstCopyrightYear << "-" << currentYear << " Pier Luigi Fiorini.\n\n";
 	text << "Written by:\n";
-	for (int32 i = 0; authors[i]; i++) {
+	for (int32 i = 0; authors[i]; i++)
 		text << "    " << authors[i] << "\n";
-	}
-	
+
 	// The extra information is optional
-	if (extraInfo != NULL) {
+	if (extraInfo != NULL)
 		text << "\n" << extraInfo << "\n";
-	}
 
 	fText->Adopt(text);
 }

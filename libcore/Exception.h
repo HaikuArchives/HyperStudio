@@ -1,3 +1,10 @@
+/*
+ * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ */
 
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
@@ -8,17 +15,17 @@
 
 namespace Hyperion {
 	class Exception : public std::exception {
-	public:
-		Exception(const std::string &msg)
-			: fMessage(msg) {
-		}
+		public:
+			Exception(const std::string &msg)
+				: fMessage(msg) {
+			}
 
-		virtual const char* what() const throw() {
-			return fMessage.c_str();
-		}
+			virtual const char* what() const throw() {
+				return fMessage.c_str();
+			}
 
-	private:
-		std::string fMessage;
+		private:
+			std::string fMessage;
 	};
 };
 
