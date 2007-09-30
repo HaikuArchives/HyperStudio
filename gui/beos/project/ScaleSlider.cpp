@@ -1,7 +1,7 @@
 
 #include <Slider.h>
 
-#include "SliderView.h"
+#include "ScaleSlider.h"
 
 SliderView::SliderView(BRect frame)
 	: BView(frame, "SliderView")

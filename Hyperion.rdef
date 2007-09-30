@@ -6,7 +6,7 @@
 **
 */
 
-#include "core/Hyperion.h"
+//#include "core/Hyperion.h"
 
 resource(1, "BEOS:APP_FLAGS") (#'APPF') $"01000000";
 

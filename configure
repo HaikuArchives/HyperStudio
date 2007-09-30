@@ -2,27 +2,33 @@
 
 CC="gcc"
 CXX="g++"
-CCFLAGS="$CCFLAGS -Wall -g -Icore -Igui -Igui/project"
-OPTIM="$OPTIM -O2"
+CCFLAGS="$CCFLAGS -W -Wall"
 LINKLIBS=""
 SYSTEM="`uname -s`"
 RELEASE="`uname -r`"
 OS="$SYSTEM"
+OSPLAT="$OS"
+PLATFORM="$OS"
+FAMILY="$OS"
 
 # System-specific flags
 case $SYSTEM in
 	BeOS)
-		CCFLAGS="$CCFLAGS -Wno-multichar"
 		DEFINES="$DEFINES SYS_BEOS"
-		LINKLIBS="$LINKLIBS -lroot -lstdc++.r4 -lbe -lmedia -ltranslation -ltracker"
+		FAMILY="BEOS"
 		case $RELEASE in
-			6.0|5.0.4) # Zeta or R5 / BONE beta 7
-				SYSTEM="$SYSTEM / BONE"
-				DEFINES="$DEFINES BEOS_BONE BEOS_PLATFORM=Zeta"
+			5.0.4) # BONE beta 7
+				OSPLAT="$OSPLAT / BONE"
+				DEFINES="$DEFINES BEOS_BONE"
+			;;
+			6.0|6.1|6.2) # Zeta or R5 / BONE beta 7
+				OSPLAT="$OSPLAT / BONE"
+				DEFINES="$DEFINES SYS_ZETA BEOS_BONE"
+				PLATFORM="Zeta"
 			;;
 			5.0*) # R5 / net_server
-				SYSTEM="$SYSTEM / net_server"
-				DEFINES="$DEFINES BEOS_NETSERVER BEOS_PLATFORM=BeOS"
+				OSPLAT="$OSPLAT / net_server"
+				DEFINES="$DEFINES BEOS_NETSERVER"
 			;;
 			*)
 				echo "Unsupported BeOS version $RELEASE"
@@ -31,16 +37,22 @@ case $SYSTEM in
 		esac
 	;;
 	Haiku)
-		CCFLAGS="$CCFLAGS -Wno-multichar"
-		DEFINES="$DEFINES SYS_HAIKU BEOS_PLATFORM=Haiku"
-		LINKLIBS="$LINKLIBS -lroot -lstdc++.r4 -lbe -lmedia -ltranslation -ltracker"
+		DEFINES="$DEFINES SYS_HAIKU"
+		PLATFORM="Haiku"
+		FAMILY="BEOS"
 	;;
 	*)
 		echo "$SYSTEM is an unsupported operating system"
 		exit 1
 	;;
 esac
-echo "System: $SYSTEM"
+
+# Define platform for the source code
+DEFINES="$DEFINES PLATFORM=$PLATFORM"
+
+# Report system and platform
+echo "   System: $SYSTEM"
+echo " Platform: $PLATFORM"
 
 # Check for endianness
 cat > testconf.c << EOF
@@ -51,25 +63,27 @@ int main()
 }
 EOF
 if ( cc -o testconf testconf.c && ./testconf ) > /dev/null 2>&1; then
-	echo "Endian: big"
+	echo "   Endian: big"
 	DEFINES="$DEFINES WORDS_BIGENDIAN"
 else
-	echo "Endian: little"
+	echo "   Endian: little"
 fi
 rm -f testconf.c testconf
 
 # Generate config.jam
 rm -f config.jam
 cat << EOF > config.jam
-CC       = $CC ;
-C++      = $CXX ;
-LINK     = $CXX ;
-CCFLAGS  = $CCFLAGS ;
-C++FLAGS = $CCFLAGS ;
-OPTIM    = $OPTIM ;
-DEFINES  = $DEFINES ;
-LINKLIBS = $LINKLIBS ;
-OS       = $OS ;
+CC        = $CC ;
+C++       = $CXX ;
+LINK      = $CXX ;
+CCFLAGS   = $CCFLAGS ;
+C++FLAGS  = $CCFLAGS ;
+DEFINES   = $DEFINES ;
+LINKLIBS  = $LINKLIBS ;
+OS        = $OS ;
+OSPLAT    = $OSPLAT ;
+PLATFORM  = $PLATFORM ;
+FAMILY    = $FAMILY ;
 EOF
 
 echo

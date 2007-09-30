@@ -6,25 +6,7 @@ if ! $(DEFINES)
 	Exit "Please run ./configure first." ;
 }
 
-HYPERION_VERSION = 0.0.0 ;
-HYPERION_BUILD   = 2007092600 ;
-DEFINES         += HYPERION_VERSION=\\\"$(HYPERION_VERSION)\\\" HYPERION_BUILD=$(HYPERION_BUILD) ;
-
-rule BeOSPackage
-{
-	Depends $(<) : $(>) ;
-	BuildBeOSPackage $(<) ;
-}
-actions BuildBeOSPackage
-{
-	rm -rf $(<) "Hyperion $(HYPERION_VERSION)" && \
-		mkdir "Hyperion $(HYPERION_VERSION)" && \
-		cp AUTHORS "Hyperion $(HYPERION_VERSION)/AUTHORS.txt" && \
-		cp COPYING "Hyperion $(HYPERION_VERSION)/COPYING.txt" && \
-		cp CREDITS "Hyperion $(HYPERION_VERSION)/CREDITS.txt" && \
-		cp THANKS "Hyperion $(HYPERION_VERSION)/THANKS.txt" && \
-		xres -o Hyperion.rsrc && \
-		cp Hyperion "Hyperion $(HYPERION_VERSION)" && \
-		zip -9 -r $(<) "Hyperion $(HYPERION_VERSION)" && \
-		rm -rf "Hyperion $(HYPERION_VERSION)"
-}
+NAME     = Hyperion ;
+VERSION  = 0.0.0 ;
+BUILD    = 2007092600 ;
+DEFINES += VERSION=\\\"$(VERSION)\\\" BUILD=$(BUILD) ;

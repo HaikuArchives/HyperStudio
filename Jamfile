@@ -1,26 +1,40 @@
 
 SubDir TOP ;
 
-CORE_SRC = core/Track.cpp core/TimeLine.cpp core/Project.cpp ;
+TYPE     = APP ;
+OPTIMIZE = FULL ;
+WARNINGS = ALL ;
 
-BEOS_BIN = Hyperion ;
-#BEOS_SRC = [ glob-tree gui/ : *.cpp ] ;
-BEOS_SRC = gui/AboutWindow.cpp gui/AddAudioTrackWindow.cpp gui/AppIconMenu.cpp gui/HyperionApp.cpp gui/MainWindow.cpp gui/NewProjectWindow.cpp gui/main.cpp gui/project/ProjectView.cpp gui/project/TimeLineView.cpp gui/project/TrackView.cpp gui/project/TracksView.cpp ;
+CORE_SRC = core/Track.cpp
+	core/TimeLine.cpp
+	core/Project.cpp ;
+BEOS_SRC = gui/beos/main.cpp
+	gui/beos/AboutWindow.cpp
+	gui/beos/AddAudioTrackWindow.cpp
+	gui/beos/AppIconMenu.cpp
+	gui/beos/HyperionApp.cpp
+	gui/beos/MainWindow.cpp
+	gui/beos/NewProjectWindow.cpp
+	gui/beos/project/ProjectView.cpp
+	#gui/beos/project/ScaleSlider.cpp
+	gui/beos/project/TimeLineView.cpp
+	gui/beos/project/TrackView.cpp
+	gui/beos/project/TracksPanelsView.cpp
+	gui/beos/project/TracksView.cpp ;
 
-if $(OS) = BeOS
+if $(FAMILY) = BEOS
 {
-	Main Hyperion : $(CORE_SRC) $(BEOS_SRC) ; 
-	BeOSPackage Hyperion-$(HYPERION_VERSION)-$(OS).zip : Hyperion ; 
-	HYPERION_PACKAGES += Hyperion-$(HYPERION_VERSION)-$(OS).zip ;
+	# Sources and resources
+	SRCS = $(CORE_SRC) $(BEOS_SRC) ;
+	RSRCS = $(NAME).rsrc ;
 }
 
-if $(OS) = Haiku
-{
-	Main Hyperion : $(CORE_SRC) $(BEOS_SRC) ; 
-	BeOSPackage Hyperion-$(HYPERION_VERSION)-$(OS).zip : Hyperion ; 
-	HYPERION_PACKAGES += Hyperion-$(HYPERION_VERSION)-$(OS).zip ;
-}
+include Jamfile-engine ;
+
+# Add binary package
+Package $(NAME)-$(VERSION)-$(PLATFORM).zip : $(NAME) ; 
+PACKAGES += $(NAME)-$(VERSION)-$(PLATFORM).zip ;
 
 # Packages
 NotFile package ;
-Depends package : $(HYPERION_PACKAGES) ;
+Depends package : $(PACKAGES) ;

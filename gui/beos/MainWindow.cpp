@@ -11,15 +11,15 @@
 #include <StatusBar.h>
 #include <String.h>
 
-#include "AddAudioTrackWindow.h"
-#include "AppIconMenu.h"
 #include "core/Exception.h"
 #include "core/HyperionDebug.h"
+#include "core/Project.h"
+#include "AddAudioTrackWindow.h"
+#include "AppIconMenu.h"
 #include "HyperionConsts.h"
 #include "MainWindow.h"
 #include "NewProjectWindow.h"
-#include "core/Project.h"
-#include "gui/project/ProjectView.h"
+#include "project/ProjectView.h"
 
 MainWindow::MainWindow(BRect frame)
 	: BWindow(frame, "HyperionWindow",

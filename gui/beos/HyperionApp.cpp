@@ -12,9 +12,9 @@
 
 #include <unistd.h>
 
+#include "core/Hyperion.h"
+#include "core/HyperionDebug.h"
 #include "AboutWindow.h"
-#include "Hyperion.h"
-#include "HyperionDebug.h"
 #include "HyperionApp.h"
 #include "MainWindow.h"
 
