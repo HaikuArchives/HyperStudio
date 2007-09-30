@@ -1,40 +1,54 @@
 
-SubDir TOP ;
+# Application version and defines
+VERSION  = 0.0.0 ;
+BUILD    = 2007092600 ;
+DEFINES += VERSION=\\\"$(VERSION)\\\" BUILD=$(BUILD) ;
 
-TYPE     = APP ;
+# Specify the level of optimization that you desire
+#	NONE, SOME, FULL
 OPTIMIZE = FULL ;
+
+# Specify special warning levels
+#	if unspecified default warnings will be used
+#	NONE = supress all warnings
+#	ALL = enable all warnings
 WARNINGS = ALL ;
 
-CORE_SRC = core/Track.cpp
-	core/TimeLine.cpp
-	core/Project.cpp ;
-BEOS_SRC = gui/beos/main.cpp
-	gui/beos/AboutWindow.cpp
-	gui/beos/AddAudioTrackWindow.cpp
-	gui/beos/AppIconMenu.cpp
-	gui/beos/HyperionApp.cpp
-	gui/beos/MainWindow.cpp
-	gui/beos/NewProjectWindow.cpp
-	gui/beos/project/ProjectView.cpp
-	#gui/beos/project/ScaleSlider.cpp
-	gui/beos/project/TimeLineView.cpp
-	gui/beos/project/TrackView.cpp
-	gui/beos/project/TracksPanelsView.cpp
-	gui/beos/project/TracksView.cpp ;
+# Source code
+CORE_SRC = libcore/Project.cpp
+	libcore/TimeLine.cpp
+	libcore/Track.cpp ;
+BEOS_SRC = hyperion/beos/main.cpp
+	hyperion/beos/AboutWindow.cpp
+	hyperion/beos/AddAudioTrackWindow.cpp
+	hyperion/beos/AppIconMenu.cpp
+	hyperion/beos/HyperionApp.cpp
+	hyperion/beos/MainWindow.cpp
+	hyperion/beos/NewProjectWindow.cpp
+	hyperion/beos/project/ProjectView.cpp
+	#hyperion/beos/project/ScaleSlider.cpp
+	hyperion/beos/project/TimeLineView.cpp
+	hyperion/beos/project/TrackView.cpp
+	hyperion/beos/project/TracksPanelsView.cpp
+	hyperion/beos/project/TracksView.cpp ;
 
-if $(FAMILY) = BEOS
+# Core library
+Library libcore.a : $(CORE_SRC) ;
+if ( $(FAMILY) = BEOS )
 {
-	# Sources and resources
-	SRCS = $(CORE_SRC) $(BEOS_SRC) ;
-	RSRCS = $(NAME).rsrc ;
+	LINKLIBS on libcore.a = -lbe -lstdc++.r4 ;
 }
 
-include Jamfile-engine ;
+# Main executable
+if ( $(FAMILY) = BEOS )
+{
+	Main Hyperion : $(BEOS_SRC) ;
+	Depends Hyperion : libcore.a ;
+	CreateResource hyperion/beos/Hyperion.rsrc : Hyperion.rdef ;
+	AddResources Hyperion : $(RSRCS) ;
+	MimeSet Hyperion ;
+	LINKLIBS on Hyperion = -lbe -stdc++.r4 -ltracker libcore.a ;
+	RSRCS on Hyperion = hyperion/beos/Hyperion.rsrc ;
+}
 
-# Add binary package
-Package $(NAME)-$(VERSION)-$(PLATFORM).zip : $(NAME) ; 
-PACKAGES += $(NAME)-$(VERSION)-$(PLATFORM).zip ;
-
-# Packages
-NotFile package ;
-Depends package : $(PACKAGES) ;
+# Build everything

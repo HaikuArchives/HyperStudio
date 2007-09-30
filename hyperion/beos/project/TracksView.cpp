@@ -3,8 +3,8 @@
 #include <Message.h>
 #include <ScrollBar.h>
 
+#include "libcore/Track.h"
 #include "ProjectView.h"
-#include "core/Track.h"
 #include "TracksView.h"
 #include "TrackView.h"
 

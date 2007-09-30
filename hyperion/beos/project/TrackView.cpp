@@ -1,7 +1,7 @@
 
 
+#include "libcore/Track.h"
 #include "TimeLineView.h"
-#include "core/Track.h"
 #include "TrackView.h"
 
 TrackView::TrackView(BRect frame, Track &track)

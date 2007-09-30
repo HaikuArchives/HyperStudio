@@ -11,9 +11,9 @@
 #include <StatusBar.h>
 #include <String.h>
 
-#include "core/Exception.h"
-#include "core/HyperionDebug.h"
-#include "core/Project.h"
+#include "libcore/Exception.h"
+#include "libcore/HyperionDebug.h"
+#include "libcore/Project.h"
 #include "AddAudioTrackWindow.h"
 #include "AppIconMenu.h"
 #include "HyperionConsts.h"

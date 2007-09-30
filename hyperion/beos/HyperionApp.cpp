@@ -12,8 +12,8 @@
 
 #include <unistd.h>
 
-#include "core/Hyperion.h"
-#include "core/HyperionDebug.h"
+#include "libcore/Hyperion.h"
+#include "libcore/HyperionDebug.h"
 #include "AboutWindow.h"
 #include "HyperionApp.h"
 #include "MainWindow.h"
