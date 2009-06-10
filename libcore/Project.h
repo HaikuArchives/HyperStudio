@@ -31,7 +31,7 @@ class Project {
 		void New();
 		status_t Load(const char* filename);
 		status_t Save();
-		void SaveAs(const char* filename);
+		status_t SaveAs(const char* filename);
 
 	private:
 		char* fFileName;

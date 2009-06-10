@@ -117,7 +117,7 @@ HyperionApp::RefsReceived(BMessage* msg)
 		BWindow* win = i == 0 ? fFirstWindow : NewWindow();
 		BMessage m(B_REFS_RECEIVED);
 		m.AddRef("refs", &ref);
-		DBGMSG(("i=%d, B_REFS_RECEIVED for %s\n", i, ref.name));
+		DBGMSG(("i=%ld, B_REFS_RECEIVED for %s\n", i, ref.name));
 		win->PostMessage(&m);
 	}
 }

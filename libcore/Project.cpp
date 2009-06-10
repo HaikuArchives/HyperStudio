@@ -115,7 +115,7 @@ Project::Save()
 	return B_OK;
 }
 
-void
+status_t
 Project::SaveAs(const char* filename)
 {
 	// Set new file name
@@ -124,5 +124,5 @@ Project::SaveAs(const char* filename)
 	fFileName = strdup(filename);
 
 	// Save
-	Save();
+	return Save();
 }

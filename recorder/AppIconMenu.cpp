@@ -69,7 +69,7 @@ void AppIconMenu::DrawContent()
 		Menu()->GetPreferredSize(&width, &height);
 
 		BRect destBounds = fBounds;
-		destBounds.OffsetBy(8.0, ((height - fBounds.Height()) * 0.5) - 1);
+		destBounds.OffsetBy(8.0f, ((height - fBounds.Height()) * 0.5f) - 1);
 
 		// Scaling the icon is left as an exercise for the reader :)
 		Menu()->DrawBitmap(fLabel, fBounds, destBounds);

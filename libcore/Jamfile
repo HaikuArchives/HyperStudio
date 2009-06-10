@@ -4,5 +4,5 @@ StaticLibrary libcore.a :
 	Project.cpp
 	TimeLine.cpp
 	Track.cpp
-	: be stdc++
+	: be $(TARGET_LIBSTDC++)
 ;

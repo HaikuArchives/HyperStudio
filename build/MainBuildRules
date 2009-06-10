@@ -273,7 +273,8 @@ if $(OSPLAT) = X86 {
 
 # Variable referring to the STL.
 if $(OSPLAT) = X86 {
-	TARGET_LIBSTDC++ = stdc++.r4 ;
+	## TARGET_LIBSTDC++ = stdc++.r4 ; ### gcc4
+	TARGET_LIBSTDC++ = stdc++ ;
 } else {
 	TARGET_LIBSTDC++ = mslcpp_4_0 ;
 }

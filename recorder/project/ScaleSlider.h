@@ -9,7 +9,10 @@ class BSlider;
 class SliderView : public BView
 {
 public:
-	SliderView(BRect frame);
+	SliderView();
+
+private:
+	BSlider*	fSlider;
 };
 
 #endif // SLIDER_VIEW_H

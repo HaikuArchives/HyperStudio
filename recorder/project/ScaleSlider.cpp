@@ -3,10 +3,10 @@
 
 #include "ScaleSlider.h"
 
-SliderView::SliderView(BRect frame)
-	: BView(frame, "SliderView")
+SliderView::SliderView()
+	: BView("SliderView", B_WILL_DRAW)
 {
-	fSlider = new BSlider(frame, "ScaleSlider", NULL,
+	fSlider = new BSlider("ScaleSlider", NULL,
 		new BMessage(kScaleChanged), 10, 100, B_TRIANGLE_THUMB);
 	fSlider->SetValue(DEFAULT_SCALE);
 	fSlider->SetHashMarks(B_HASH_MARKS_TOP);

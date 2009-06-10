@@ -18,7 +18,6 @@
 #include <StatusBar.h>
 #include <String.h>
 
-#include "libcore/Exception.h"
 #include "libcore/HyperionDebug.h"
 #include "libcore/Project.h"
 #include "AddAudioTrackWindow.h"
@@ -163,10 +162,9 @@ MainWindow::_RefsReceived(BMessage* msg)
 	entry.GetPath(&path);
 
 	// Load project file
-	try {
-		fPrjView->CurrentProject()->Load(path.Path());
-	} catch (Hyperion::Exception e) {
-		BAlert* alert = new BAlert(NULL, e.what(), "OK", NULL, NULL,
+	// TODO: Handle error
+	if (fPrjView->CurrentProject()->Load(path.Path()) != B_OK) {
+		BAlert* alert = new BAlert(NULL, "Error!", "OK", NULL, NULL,
 		                           B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT);
 		alert->Go();
 		return;
@@ -200,10 +198,9 @@ MainWindow::_SaveRequested(BMessage* msg)
 	path.Append(filename);
 
 	// Save project file
-	try {
-		fPrjView->CurrentProject()->SaveAs(path.Path());
-	} catch (Hyperion::Exception e) {
-		BAlert *alert = new BAlert(NULL, e.what(), "OK");
+	// TODO: Handle error
+	if (fPrjView->CurrentProject()->SaveAs(path.Path()) != B_OK) {
+		BAlert *alert = new BAlert(NULL, "Error!", "OK");
 		alert->Go();
 	}
 }

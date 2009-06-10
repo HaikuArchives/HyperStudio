@@ -59,7 +59,7 @@ AboutWindow::Show()
 	view->SetStylable(true);
 	view->GetFont(&font);
 	font.SetFace(B_BOLD_FACE);
-	font.SetSize(font.Size() * 1.7);
+	font.SetSize(font.Size() * 1.7f);
 	view->SetFontAndColor(0, fAppName->Length(), &font);
 	alert->Go();
 }
