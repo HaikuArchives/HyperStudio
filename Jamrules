@@ -29,7 +29,6 @@ HCACHEFILE = header_cache ;
 JCACHEFILE = jamfile_cache ;
 LOCATE on $(HCACHEFILE) $(JCACHEFILE) = $(GENERATED_DIR) ;
 
-
 rule Distro
 {
 	local target = $(1) ;
@@ -69,4 +68,3 @@ actions FullDistro
 	cp $(HYPERSTUDIO_TOP)/lib/$(LIBXERCES) $(FULL_DISTRO_DIR)/lib/ ;
 	mimeset $(FULL_DISTRO_DIR) ;
 }
-

@@ -16,38 +16,9 @@ COMMON_FOLDER = /boot/home/config ;
 LIBNETAPI = netapi ;	# default, may be changed to bnetapi (see below)
 
 if $(OSPLAT) = X86 {
-	# check for Haiku...
-	local haveHaiku = [ GLOB /boot/develop/headers/posix/arpa : inet.h ] ;
-	if $(haveHaiku)	{
-		CCFLAGS += -DHYPERSTUDIO_FOR_BONE -DHYPERSTUDIO_FOR_HAIKU ;
-		C++FLAGS += -DHYPERSTUDIO_FOR_BONE -DHYPERSTUDIO_FOR_HAIKU ;
-		NETWORK_LIBS += network ;
-		PLATFORM = haiku ;
-		COMMON_FOLDER = /boot/common ;
-	}
-	# check for BONE...
-	local haveBone = [ GLOB /boot/develop/headers/be/bone/arpa : inet.h ] ;
-	if $(haveBone)	{
-		CCFLAGS += -DHYPERSTUDIO_FOR_BONE ;
-		C++FLAGS += -DHYPERSTUDIO_FOR_BONE ;
-		SYSHDRS += /boot/develop/headers/be/bone /boot/develop/headers/be/bone/sys ;
-		NETWORK_LIBS += socket bind ;
-		PLATFORM = bone ;
-	}
-	# check for Zeta...
-	local haveZeta = [ GLOB /boot/beos/system/lib : libzeta.so ] ;
-	if $(haveZeta)	{
-		LINKLIBS += -lzeta ;
-		CCFLAGS += -DHYPERSTUDIO_FOR_ZETA -D_ZETA_USING_DEPRECATED_API_ ;
-		C++FLAGS += -DHYPERSTUDIO_FOR_ZETA -D_ZETA_USING_DEPRECATED_API_ ;
-		SYSHDRS += /boot/develop/headers/liblayout /boot/develop/headers/pcre ;
-		PLATFORM = zeta ;
-	}
-	# check for libbnetapi...
-	local haveLibbnetapi = [ GLOB /boot/develop/lib/x86 : libbnetapi.so ] ;
-	if $(haveLibbnetapi) {
-		LIBNETAPI = bnetapi ;
-	}
+	NETWORK_LIBS += network ;
+	PLATFORM = haiku ;
+	COMMON_FOLDER = /boot/common ;
 }
 
 # Use copyattr for copying.
@@ -81,13 +52,11 @@ rule SetUpSubDirBuildSettings {
 	# warnings settings
 	if $(WARNINGS) != 0 {
 		if $(OSPLAT) = X86 {
-			CCFLAGS += -Wall -Wno-multichar -Wmissing-prototypes 
-						  -Wpointer-arith -Wcast-align -Wsign-compare ;
-			C++FLAGS += -Wall -Wno-multichar -Wmissing-prototypes 
-							-Wno-ctor-dtor-privacy -Woverloaded-virtual 
-							-Wconversion -Wpointer-arith -Wstrict-prototypes 
-							-Wcast-align -Wsign-compare -Wno-reorder 
-							-Wno-unknown-pragmas ;
+			CCFLAGS += -Wall -Wno-multichar -Wpointer-arith 
+							-Wmissing-prototypes -Wcast-align -Wsign-compare ;
+			C++FLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy -Woverloaded-virtual 
+							-Wconversion -Wpointer-arith -Wcast-align
+							-Wsign-compare -Wno-reorder -Wno-unknown-pragmas ;
 		} else {
 			CCFLAGS += -w on -requireprotos ;
 		}

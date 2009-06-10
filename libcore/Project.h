@@ -29,8 +29,8 @@ class Project {
 		bool IsModified() const { return fModified; }
 
 		void New();
-		void Load(const char* filename);
-		void Save();
+		status_t Load(const char* filename);
+		status_t Save();
 		void SaveAs(const char* filename);
 
 	private:

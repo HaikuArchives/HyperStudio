@@ -1,10 +1,8 @@
+SubDir HYPERSTUDIO_TOP libcore ;
 
-SubDir TOP libcore ;
-
-SRC =
-Project.cpp
-TimeLine.cpp
-Track.cpp ;
-
-Library libcore.a : $(SRC) ;
-LINKLIBS = -lbe -lstdc++.r4 ;
+StaticLibrary libcore.a :
+	Project.cpp
+	TimeLine.cpp
+	Track.cpp
+	: be stdc++
+;

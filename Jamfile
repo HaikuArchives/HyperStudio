@@ -1,6 +1,6 @@
 SubDir HYPERSTUDIO_TOP ;
 
-SubInclude HYPERSTUDIO_TOP src ;
+SubInclude HYPERSTUDIO_TOP libcore ;
 
 Distro distro ;
 

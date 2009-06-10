@@ -42,7 +42,8 @@ actions piecemeal together existing Clean
 # headers.
 
 if $(OSPLAT) = X86 {
-	HDRS_INCLUDES_SEPARATOR = -I- ;
+	### HDRS_INCLUDES_SEPARATOR = -I- ; # not working with gcc4
+	HDRS_INCLUDES_SEPARATOR = -iquote- ;
 } else {
 	HDRS_INCLUDES_SEPARATOR = -i- ;
 }
