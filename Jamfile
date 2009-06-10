@@ -1,46 +1,7 @@
+SubDir HYPERSTUDIO_TOP ;
 
-# xx
-SubDir TOP ;
+SubInclude HYPERSTUDIO_TOP src ;
 
-# Application version and defines
-VERSION  = 0.0.0 ;
-BUILD    = 2007092600 ;
-DEFINES += VERSION=\\\"$(VERSION)\\\" BUILD=$(BUILD) ;
+Distro distro ;
 
-# Specify the level of optimization that you desire
-#	NONE, SOME, FULL
-OPTIMIZE = FULL ;
-
-# Specify special warning levels
-#	if unspecified default warnings will be used
-#	NONE = supress all warnings
-#	ALL = enable all warnings
-WARNINGS = ALL ;
-
-# Main executable
-if ( $(FAMILY) = BEOS )
-{
-	# Source code
-	BEOS_SRC =
-beos/main.cpp
-beos/AboutWindow.cpp
-beos/AddAudioTrackWindow.cpp
-beos/AppIconMenu.cpp
-beos/HyperionApp.cpp
-beos/MainWindow.cpp
-beos/NewProjectWindow.cpp
-beos/project/ProjectView.cpp
-#beos/project/ScaleSlider.cpp
-beos/project/TimeLineView.cpp
-beos/project/TrackView.cpp
-beos/project/TracksPanelsView.cpp
-beos/project/TracksView.cpp ;
-
-	Main Hyperion : $(BEOS_SRC) ;
-	CreateResource $(TOP)/beos/Hyperion.rsrc : $(TOP)/beos/Hyperion.rdef ;
-	AddResources Hyperion : $(TOP)/beos/Hyperion.rsrc ;
-	MimeSet Hyperion ;
-	LINKLIBS on Hyperion = -lbe -stdc++.r4 -ltracker $(TOP)/libcore/libcore.a ;
-}
-
-SubInclude TOP libcore ;
+FullDistro fulldistro ;

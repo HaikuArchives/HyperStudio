@@ -1,187 +1,72 @@
+# The directories used by the build.
+BUILD_DIR		= [ FDirName $(HYPERSTUDIO_TOP) build ] ;
+GENERATED_DIR		= [ FDirName $(HYPERSTUDIO_TOP) generated ] ;
+DISTRO_DIR		= [ FDirName $(HYPERSTUDIO_TOP) generated distro ] ;
 
-include config.jam ;
+include [ FDirName $(BUILD_DIR) HelperRules ] ;
+include [ FDirName $(BUILD_DIR) ConfigRules ] ;
+include [ FDirName $(BUILD_DIR) OverriddenJamRules ] ;
+include [ FDirName $(BUILD_DIR) MainBuildRules ] ;
+include [ FDirName $(BUILD_DIR) BuildSettings ] ;
 
-if ( ! $(PLATFORM) )
+FULL_DISTRO_DIR	= [ FDirName $(HYPERSTUDIO_TOP) generated distro-$(PLATFORM)-with-libs ] ;
+
+# Include UserBuildConfig.
 {
-	Exit "Please run ./configure first." ;
-}
-
-# CreateResource <Resource File> : <Resource Source> ;
-#   Create resource binary file from source.
-rule CreateResource
-{
-	Depends $(<) : $(>) ;
-}
-
-if ( $(FAMILY) = BEOS )
-{
-	actions CreateResource
+	local userBuildConfig = [ GLOB $(BUILD_DIR) : UserBuildConfig ] ;
+	if $(userBuildConfig)
 	{
-		$(BERES) -o "$(<)" "$(>)"
-	}
-}
-
-# AddResources <Application Name> : <Resource Files> ;
-#   Adds the given resources to the given application.
-rule AddResources
-{
-	Depends $(<) : $(>) ;
-	Clean $(<) : $(>) ;
-}
-
-if ( $(FAMILY) = BEOS )
-{
-	actions AddResources
-	{
-		$(XRES) -o "$(<)" "$(>)"
+		LOCATE on UserBuildConfig = $(BUILD_DIR) ;
+		include UserBuildConfig ;
 	}
 }
 
-if ( $(FAMILY) = BEOS )
+# default to strip generated apps if not specified otherwise:
+STRIP_APPS ?= 0 ;
+
+# Cache files for header scanning and jamfile caching.
+HCACHEFILE = header_cache ;
+JCACHEFILE = jamfile_cache ;
+LOCATE on $(HCACHEFILE) $(JCACHEFILE) = $(GENERATED_DIR) ;
+
+
+rule Distro
 {
-	# MimeSet <Application Name> ;
-	#   Sets the mime type of the given application to be an application.
-	actions MimeSet
-	{
-		$(MIMESET) -f "$(<)"
-	}
+	local target = $(1) ;
+
+	NotFile $(target) ;
+	Always $(target) ;
 }
 
-# Package <Application Name> : <Package File> ;
-#   Build the package file for the given application.
-rule Package
+actions Distro
 {
-	Depends $(<) : $(>) ;
-	BuildPackage $(<) ;
+	echo "making distro $(DISTRO_DIR)" ;
+#	cp -a $(HYPERSTUDIO_TOP)/Changes.txt $(DISTRO_DIR)/ ;
+#	cp -a $(HYPERSTUDIO_TOP)/Readme.txt $(DISTRO_DIR)/ ;
+	cp -a $(HYPERSTUDIO_TOP)/LICENSE $(DISTRO_DIR)/ ;
+	mimeset $(DISTRO_DIR) ;
 }
 
-if $(FAMILY) = BEOS
+Depends fulldistro : distro ;
+
+rule FullDistro
 {
-	actions BuildPackage
-	{
-		rm -rf $(<) "$(<) $(VERSION)" && \
-			$(MKDIR) "$(<) $(VERSION)" && \
-			cp AUTHORS "$(<) $(VERSION)/AUTHORS.txt" && \
-			cp COPYING "$(<) $(VERSION)/COPYING.txt" && \
-			cp CREDITS "$(<) $(VERSION)/CREDITS.txt" && \
-			cp THANKS "$(<) $(VERSION)/THANKS.txt" && \
-			$(BERES) -o "$(<).rsrc" $(<).rdef && \
-			cp $(<) "$(<) $(VERSION)" && \
-			zip -9 -r $(<) "$(<) $(VERSION)" && \
-			rm -rf "$(<) $(VERSION)"
-	}
+	local target = $(1) ;
+
+	NotFile $(target) ;
+	Always $(target) ;
 }
 
-# Now handle platform-specific settings
-if ( $(OSPLAT) = X86 )
+actions FullDistro
 {
-	switch $(OPTIMIZE)
-	{
-		case FULL : OPTIMIZER = -O3 ;
-		case SOME : OPTIMIZER = -O1 ;
-		case NONE : OPTIMIZER = -O0 ;
-		# Default to FULL
-		case * : OPTIMIZER = -O3 ;
-	}
-
-	DEBUG = ;
-
-	if ( $(DEBUGGER) = TRUE )
-	{
-		DEBUG += -g ;
-		OPTIMIZER = -O0 ;
-	}
-
-	CCFLAGS += $(OPTIMIZER) $(DEBUG) ;
-	C++FLAGS += $(OPTIMIZER) $(DEBUG) ;
-
-	if ( $(WARNINGS) = ALL )
-	{		
-		if ( $(FAMILY) = BEOS )
-		{
-			CCFLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy ;
-			C++FLAGS += -Wall -Wno-multichar -Wno-ctor-dtor-privacy ;
-		}
-		else
-		{
-			CCFLAGS += -Wall ;
-			C++FLAGS += -Wall ;
-		}
-	}
-	else if ( $(WARNINGS) = NONE )
-	{
-		CCFLAGS += -w ;
-		C++FLAGS += -w ;
-	}
-
-	LINKFLAGS += $(DEBUG) ;
-
-	if ( $(FAMILY) = BEOS )
-	{
-		# Set linker flags
-		switch $(TYPE)
-		{
-			case APP : LINKFLAGS += -Xlinker -soname=_APP_ ;
-			case SHARED : LINKFLAGS += -nostart -Xlinker -soname=$(NAME) ;
-		}
-	}
-} 
-else if ( $(OSPLAT) = PPC ) 
-{
-	switch $(OPTIMIZE)
-	{
-		case FULL : OPTIMIZER = -O7 ;
-		case SOME : OPTIMIZER = -O3 ;
-		case NONE : OPTIMIZER = -O0 ;
-		# Default to FULL
-		case * : OPTIMIZER = -O7 ;
-	}
-
-	DEBUG = ;
-
-	if ( $(DEBUGGER) = TRUE )
-	{
-		DEBUG += -g ;
-	}
-
-	CCFLAGS += $(OPTIMIZER) $(DEBUG) ;
-	C++FLAGS += $(OPTIMIZER) $(DEBUG) ;
-
-	if ( $(WARNINGS) = ALL )
-	{		
-		CCFLAGS += -w on -requireprotos ;
-		C++FLAGS += -w on -requireprotos ;
-	}
-	else if ( $(WARNINGS) = NONE )
-	{
-		CCFLAGS += -w off ;
-		C++FLAGS += -w off ;
-	}
-
-	# Set linker flags
-	if ( $(TYPE) = SHARED )
-	{
-		LINKFLAGS += -xms ;
-	}
-
-	if ( $(FAMILY) = BEOS )
-	{
-		LINKFLAGS += -export pragma -init _init_routine_ 
-			-term _term_routine_ -lroot 
-			/boot/develop/lib/ppc/glue-noinit.a 
-			/boot/develop/lib/ppc/init_term_dyn.o 
-			/boot/develop/lib/ppc/start_dyn.o ;
-	}
-} 
-else 
-{
-	EXIT "Your hardware is unsupported" ;
+	echo "making full distro $(FULL_DISTRO_DIR)" ;
+	rm -rf $(FULL_DISTRO_DIR) ;
+	cp -a $(DISTRO_DIR) $(FULL_DISTRO_DIR) ;
+	mkdir -p $(FULL_DISTRO_DIR)/lib ;
+	cp $(HYPERSTUDIO_TOP)/lib/$(LIBCRYPTLIB) $(FULL_DISTRO_DIR)/lib/ ;
+	cp $(HYPERSTUDIO_TOP)/lib/$(LIBFREETYPE) $(FULL_DISTRO_DIR)/lib/ ;
+	cp $(HYPERSTUDIO_TOP)/lib/$(LIBLAYOUT) $(FULL_DISTRO_DIR)/lib/ ;
+	cp $(HYPERSTUDIO_TOP)/lib/$(LIBXERCES) $(FULL_DISTRO_DIR)/lib/ ;
+	mimeset $(FULL_DISTRO_DIR) ;
 }
 
-# Define some tools
-if ( $(FAMILY) = BEOS )
-{
-	XRES = xres ;
-	BERES = beres ;
-	MIMESET = mimeset ;
-}
