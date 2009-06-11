@@ -1,0 +1,9 @@
+SubDir HYPERSTUDIO_TOP libui ;
+
+StaticLibrary libui.a :
+	DrawingTidbits.cpp
+	PeakView.cpp
+	SeekSlider.cpp
+	VolumeSlider.cpp
+	: be $(TARGET_LIBSTDC++)
+;

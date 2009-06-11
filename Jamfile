@@ -1,6 +1,7 @@
 SubDir HYPERSTUDIO_TOP ;
 
 SubInclude HYPERSTUDIO_TOP libcore ;
+SubInclude HYPERSTUDIO_TOP libui ;
 SubInclude HYPERSTUDIO_TOP recorder ;
 
 Distro distro ;
