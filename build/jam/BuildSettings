@@ -2,6 +2,9 @@
 #
 # Setup global variables.
 
+# TODO: Handle different platforms!
+PLATFORM = haiku ;
+
 # C and C++ flags
 if $(OSPLAT) = PPC {
 	# filter out -nosyspath
@@ -10,14 +13,12 @@ if $(OSPLAT) = PPC {
 	LINKFLAGS += -warn -export pragma ;
 }
 
-PLATFORM = r5 ;
 COMMON_FOLDER = /boot/home/config ;
 
 LIBNETAPI = netapi ;	# default, may be changed to bnetapi (see below)
 
 if $(OSPLAT) = X86 {
 	NETWORK_LIBS += network ;
-	PLATFORM = haiku ;
 	COMMON_FOLDER = /boot/common ;
 }
 
@@ -37,7 +38,8 @@ BUILD_TESTS ?= 0 ;
 # For consistency, we evaluate BUILD_DEBUG, too:
 DEBUG ?= $(BUILD_DEBUG) ;
 
-rule SetUpSubDirBuildSettings {
+rule SetUpSubDirBuildSettings
+{
 	# SetUpSubDirBuildSettings <dir> ;
 	#
 	# Sets up the compiler flags and defines based on the WARNINGS, DEBUG, and

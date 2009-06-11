@@ -1,27 +1,33 @@
 # The directories used by the build.
 BUILD_DIR		= [ FDirName $(HYPERSTUDIO_TOP) build ] ;
+JAM_DIR			= [ FDirName $(BUILD_DIR) jam ] ;
+SCRIPTS_DIR		= [ FDirName $(JAM_DIR) scripts ] ;
 GENERATED_DIR		= [ FDirName $(HYPERSTUDIO_TOP) generated ] ;
 DISTRO_DIR		= [ FDirName $(HYPERSTUDIO_TOP) generated distro ] ;
 
-include [ FDirName $(BUILD_DIR) HelperRules ] ;
-include [ FDirName $(BUILD_DIR) ConfigRules ] ;
-include [ FDirName $(BUILD_DIR) OverriddenJamRules ] ;
-include [ FDirName $(BUILD_DIR) MainBuildRules ] ;
-include [ FDirName $(BUILD_DIR) BuildSettings ] ;
+# TODO: Call gcc4-detector
+HAVE_GCC4 = 1 ;
+
+# Include jam scripts
+include [ FDirName $(JAM_DIR) HelperRules ] ;
+include [ FDirName $(JAM_DIR) ConfigRules ] ;
+include [ FDirName $(JAM_DIR) OverriddenJamRules ] ;
+include [ FDirName $(JAM_DIR) MainBuildRules ] ;
+include [ FDirName $(JAM_DIR) BuildSettings ] ;
 
 FULL_DISTRO_DIR	= [ FDirName $(HYPERSTUDIO_TOP) generated distro-$(PLATFORM)-with-libs ] ;
 
 # Include UserBuildConfig.
 {
-	local userBuildConfig = [ GLOB $(BUILD_DIR) : UserBuildConfig ] ;
+	local userBuildConfig = [ GLOB $(JAM_DIR) : UserBuildConfig ] ;
 	if $(userBuildConfig)
 	{
-		LOCATE on UserBuildConfig = $(BUILD_DIR) ;
+		LOCATE on UserBuildConfig = $(JAM_DIR) ;
 		include UserBuildConfig ;
 	}
 }
 
-# default to strip generated apps if not specified otherwise:
+# Default to strip generated apps if not specified otherwise:
 STRIP_APPS ?= 0 ;
 
 # Cache files for header scanning and jamfile caching.
@@ -39,10 +45,10 @@ rule Distro
 
 actions Distro
 {
-	echo "making distro $(DISTRO_DIR)" ;
+	echo "== Making distro $(DISTRO_DIR) ==" ;
 #	cp -a $(HYPERSTUDIO_TOP)/Changes.txt $(DISTRO_DIR)/ ;
 #	cp -a $(HYPERSTUDIO_TOP)/Readme.txt $(DISTRO_DIR)/ ;
-	cp -a $(HYPERSTUDIO_TOP)/LICENSE $(DISTRO_DIR)/ ;
+#	cp -a $(HYPERSTUDIO_TOP)/LICENSE $(DISTRO_DIR)/ ;
 	mimeset $(DISTRO_DIR) ;
 }
 
@@ -58,13 +64,13 @@ rule FullDistro
 
 actions FullDistro
 {
-	echo "making full distro $(FULL_DISTRO_DIR)" ;
+	echo "== Making full distro $(FULL_DISTRO_DIR) ==" ;
 	rm -rf $(FULL_DISTRO_DIR) ;
 	cp -a $(DISTRO_DIR) $(FULL_DISTRO_DIR) ;
-	mkdir -p $(FULL_DISTRO_DIR)/lib ;
-	cp $(HYPERSTUDIO_TOP)/lib/$(LIBCRYPTLIB) $(FULL_DISTRO_DIR)/lib/ ;
-	cp $(HYPERSTUDIO_TOP)/lib/$(LIBFREETYPE) $(FULL_DISTRO_DIR)/lib/ ;
-	cp $(HYPERSTUDIO_TOP)/lib/$(LIBLAYOUT) $(FULL_DISTRO_DIR)/lib/ ;
-	cp $(HYPERSTUDIO_TOP)/lib/$(LIBXERCES) $(FULL_DISTRO_DIR)/lib/ ;
+#	mkdir -p $(FULL_DISTRO_DIR)/lib ;
+#	cp $(HYPERSTUDIO_TOP)/lib/$(LIBCRYPTLIB) $(FULL_DISTRO_DIR)/lib/ ;
+#	cp $(HYPERSTUDIO_TOP)/lib/$(LIBFREETYPE) $(FULL_DISTRO_DIR)/lib/ ;
+#	cp $(HYPERSTUDIO_TOP)/lib/$(LIBLAYOUT) $(FULL_DISTRO_DIR)/lib/ ;
+#	cp $(HYPERSTUDIO_TOP)/lib/$(LIBXERCES) $(FULL_DISTRO_DIR)/lib/ ;
 	mimeset $(FULL_DISTRO_DIR) ;
 }

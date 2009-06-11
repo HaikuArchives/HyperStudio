@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Simple test to detect if we have gcc4
+cat << EOF | gcc -E -pipe -c - | grep gcc -q
+#if defined(__GNUC__)
+#	if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 0)
+		// Good, we've got gcc4 or better
+#	else
+		int gcc_less_than_four;
+#	endif
+#else
+	int no_gcc;
+#endif
+EOF
+if [ $? -eq 0 ]; then
+	exit 1
+fi
+
+exit 0
