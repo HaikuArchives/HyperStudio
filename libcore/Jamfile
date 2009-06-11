@@ -2,7 +2,7 @@ SubDir HYPERSTUDIO_TOP libcore ;
 
 StaticLibrary libcore.a :
 	Project.cpp
-	TimeLine.cpp
+	Timeline.cpp
 	Track.cpp
 	: be $(TARGET_LIBSTDC++)
 ;

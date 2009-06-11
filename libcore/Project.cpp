@@ -12,7 +12,7 @@
 #include <Message.h>
 #include <String.h>
 
-#include "HyperionDebug.h"
+#include "HyperStudioDebug.h"
 #include "Project.h"
 #include "Timeline.h"
 
