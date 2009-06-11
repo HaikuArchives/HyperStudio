@@ -1,14 +1,11 @@
 /*
- * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
- * Distributed under the terms of the MIT License.
- *
- * Authors:
- *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ * Copyright 2007-2009 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the GPL v3 License.
  */
+#ifndef HYPERSTUDIO_H
+#define HYPERSTUDIO_H
 
-#ifndef HYPERION_H
-#define HYPERION_H
+#define HYPERSTUDIO_RECORDER_SIGNATURE  "application/x-vnd.HyperStudio-Recorder"
+#define HYPERSTUDIO_EDITOR_SIGNATURE    "application/x-vnd.HyperStudio-Editor"
 
-#define HYPERION_SIGNATURE "application/x-vnd.Hyperion"
-
-#endif // HYPERION_H
+#endif // HYPERSTUDIO_H

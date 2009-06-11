@@ -1,17 +1,14 @@
 /*
- * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
- * Distributed under the terms of the MIT License.
- *
- * Authors:
- *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ * Copyright 2007-2009 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the GPL v3 License.
  */
+#ifndef TIMELINE_H
+#define TIMELINE_H
 
-#ifndef TIME_LINE_H
-#define TIME_LINE_H
-
-class TimeLine {
-	public:
-		TimeLine();
+class Timeline
+{
+public:
+		Timeline();
 };
 
-#endif // TIME_LINE_H
+#endif // TIMELINE_H

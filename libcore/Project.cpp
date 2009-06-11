@@ -14,9 +14,10 @@
 
 #include "HyperionDebug.h"
 #include "Project.h"
-#include "TimeLine.h"
+#include "Timeline.h"
 
 static uint32 new_project_count = 0;
+
 
 Project::Project()
 {
@@ -24,24 +25,61 @@ Project::Project()
 	New();
 
 	// Initialize members
-	fTimeLine = new TimeLine();
+	fTimeline = new Timeline();
 }
+
 
 Project::~Project()
 {
-	delete fTimeLine;
+	delete fTimeline;
 	if (fFileName)
 		(void)free(fFileName);
 }
 
-TimeLine *
-Project::GetTimeLine() const
+
+const char* Project::Title() const
 {
-	return fTimeLine;
+	return fTitle.String();
 }
 
-void
-Project::New()
+
+float Project::Frequency() const
+{
+	return fFrequency;
+}
+
+
+uint32 Project::SampleRate() const
+{
+	return fSampleRate;
+}
+
+
+bigtime_t Project::Duration() const
+{
+	return fDuration;
+}
+
+
+Timeline* Project::GetTimeline() const
+{
+	return fTimeline;
+}
+
+
+const char* Project::FileName() const
+{
+	return fFileName;
+}
+
+
+bool Project::IsModified() const
+{
+	return fModified;
+}
+
+
+void Project::New()
 {
 	fFileName = NULL;
 	fFrequency = 44100.0f;
@@ -52,8 +90,8 @@ Project::New()
 	fTitle << "Untitled " << ++new_project_count;
 }
 
-status_t
-Project::Load(const char* filename)
+
+status_t Project::Load(const char* filename)
 {
 	status_t err;
 	entry_ref ref;
@@ -86,8 +124,8 @@ Project::Load(const char* filename)
 	return B_OK;
 }
 
-status_t
-Project::Save()
+
+status_t Project::Save()
 {
 	BDirectory dir;
 	BEntry entry(fFileName);
@@ -115,8 +153,8 @@ Project::Save()
 	return B_OK;
 }
 
-status_t
-Project::SaveAs(const char* filename)
+
+status_t Project::SaveAs(const char* filename)
 {
 	// Set new file name
 	if (fFileName)
