@@ -1,0 +1,39 @@
+SubDir HYPERSTUDIO_TOP recorder ;
+
+SubDirHdrs [ FDirName $(HYPERSTUDIO_TOP) ] ;
+
+local sourceDirs =
+	transport
+	project
+;
+
+local sourceDir ;
+for sourceDir in $(sourceDirs) {
+	SEARCH_SOURCE += [ FDirName $(HYPERSTUDIO_TOP) recorder $(sourceDir) ] ;
+}
+
+Application HyperStudio :
+	main.cpp
+	AboutWindow.cpp
+	AddAudioTrackWindow.cpp
+	AppIconMenu.cpp
+	HyperionApp.cpp
+	MainWindow.cpp
+	NewProjectWindow.cpp
+
+	# transport
+	TransportWindow.cpp
+	TransportView.cpp
+	TransportButton.cpp
+	TransportControlGroup.cpp
+
+	# project
+#	ProjectView.cpp
+#	ScaleSlider.cpp
+	TimelineView.cpp
+#	TrackView.cpp
+#	TracksPanelsView.cpp
+#	TracksView.cpp
+	: be tracker $(TARGET_LIBSTDC++) libcore.a libui.a
+	: Hyperion.rdef
+;

@@ -14,12 +14,12 @@
 int
 main(int argc, char* argv[])
 {
-	HyperionApp* app = new HyperionApp;
+	RecorderApp* app = new RecorderApp;
 	if (app->InitCheck() != B_OK) {
 		BString errMsg;
-		errMsg << "The following error occurred loading Hyperion:\n";
+		errMsg << "The following error occurred loading Recorder:\n";
 		errMsg << strerror(app->InitCheck());
-		BAlert* alert = new BAlert("Hyperion Error", errMsg.String(),
+		BAlert* alert = new BAlert("Recorder Error", errMsg.String(),
 			"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 		alert->Go();
 	}

@@ -18,22 +18,25 @@
 #include <StatusBar.h>
 #include <String.h>
 
-#include "libcore/HyperionDebug.h"
+#include "libcore/HyperStudioDebug.h"
 #include "libcore/Project.h"
 #include "AddAudioTrackWindow.h"
 #include "AppIconMenu.h"
 #include "HyperionConsts.h"
 #include "MainWindow.h"
 #include "NewProjectWindow.h"
-#include "project/ProjectView.h"
+#include "TransportWindow.h"
+
+#include "project/TimelineView.h"
 
 MainWindow::MainWindow(BRect frame)
-	: BWindow(frame, "HyperionWindow", B_DOCUMENT_WINDOW_LOOK, B_NORMAL_WINDOW_FEEL,
+	: BWindow(frame, "HyperStudio Recorder", B_DOCUMENT_WINDOW_LOOK, B_NORMAL_WINDOW_FEEL,
 		B_ASYNCHRONOUS_CONTROLS),
 	fOpenPanel(NULL),
 	fSavePanel(NULL),
 	fNewPrjWindow(NULL),
-	fAddAudioTrackWindow(NULL)
+	fAddAudioTrackWindow(NULL),
+	fTimelineView(NULL)
 {
 	// Create menus
 	InitMenus();
@@ -49,6 +52,10 @@ MainWindow::MainWindow(BRect frame)
 
 	// Automatically show this window
 	Show();
+
+	// Create transport window
+	fTransport = new TransportWindow();
+	fTransport->Show();
 }
 
 MainWindow::~MainWindow()
@@ -92,12 +99,14 @@ MainWindow::MessageReceived(BMessage* msg)
 	case MENU_PROJECT_OPEN:
 		fOpenPanel->Show();
 		break;
+#if 0
 	case MENU_PROJECT_SAVE:
 		if (fPrjView->CurrentProject()->FileName())
 			fPrjView->CurrentProject()->Save();
 		else
 			fSavePanel->Show();
 		break;
+#endif
 	case MENU_PROJECT_SAVEAS:
 		fSavePanel->Show();
 		break;
@@ -112,29 +121,35 @@ MainWindow::MessageReceived(BMessage* msg)
 	case MENU_TRACKS_ADDMIDI:
 		break;
 
+#if 0
 	// Dialog messages
 	case kNewProjectSelected:
 		fNewPrjWindow->Hide();
 		fPrjView->CurrentProject()->New();
 		SetTitle(fPrjView->CurrentProject()->Title());
 		break;
+#endif
 	case kNewProjectCanceled:
 		fNewPrjWindow = NULL;
 		break;
+#if 0
 	case kAddAudioTrackSelected: {
 			int32 channels = 0;
 			if (msg->FindInt32("channels", &channels) == B_OK)
 				fPrjView->AddAudioTrack((uint32)channels);
 		}
 		break;
+#endif
 	case kAddAudioTrackCanceled:
 		fAddAudioTrackWindow = NULL;
 		break;
 
+#if 0
 	// View messages
 	case kScaleChanged:
 		fPrjView->Rescale();
 		break;
+#endif
 
 	// Default handler
 	default:
@@ -161,6 +176,7 @@ MainWindow::_RefsReceived(BMessage* msg)
 	BEntry entry(&ref, true);
 	entry.GetPath(&path);
 
+#if 0
 	// Load project file
 	// TODO: Handle error
 	if (fPrjView->CurrentProject()->Load(path.Path()) != B_OK) {
@@ -172,6 +188,7 @@ MainWindow::_RefsReceived(BMessage* msg)
 
 	// Set a new title
 	SetTitle(fPrjView->CurrentProject()->Title());
+#endif
 }
 
 void
@@ -197,12 +214,14 @@ MainWindow::_SaveRequested(BMessage* msg)
 	BPath path(&dir_ref);
 	path.Append(filename);
 
+#if 0
 	// Save project file
 	// TODO: Handle error
 	if (fPrjView->CurrentProject()->SaveAs(path.Path()) != B_OK) {
 		BAlert *alert = new BAlert(NULL, "Error!", "OK");
 		alert->Go();
 	}
+#endif
 }
 
 void
@@ -210,7 +229,7 @@ MainWindow::InitMenus()
 {
 	fMenuBar = new BMenuBar(BRect(0.0f, 0.0f, 0.0f, 0.0f), "MenuBar");
 
-	BMenu* main = new BMenu("Hyperion");
+	BMenu* main = new BMenu("HyperStudio Recorder");
 	BMenuItem *about = new BMenuItem("About"B_UTF8_ELLIPSIS, new BMessage(B_ABOUT_REQUESTED));
 	about->SetTarget(be_app);
 	main->AddItem(about);
@@ -248,6 +267,9 @@ MainWindow::InitMenus()
 void
 MainWindow::InitViews()
 {
+	fTimelineView = new TimelineView("timeline");
+
+#if 0 // TODO: not sure about this
 	// Create and add project view
 	BRect r = Bounds();
 	r.top = fMenuBar->Frame().Height();
@@ -257,7 +279,6 @@ MainWindow::InitViews()
 	// Set window title
 	SetTitle(fPrjView->CurrentProject()->Title());
 
-#if 0 // TODO: not sure about this
 	BStatusBar *sbar = new BStatusBar(BRect(0.0f, Bounds().Height() - 10.0f, Bounds().Width(), Bounds().Height()), "StatusBar");
 	AddChild(sbar);
 #endif
@@ -266,6 +287,7 @@ MainWindow::InitViews()
 bool
 MainWindow::CloseProject()
 {
+#if 0
 	// Just exit successfully if already saved
 	if (!fPrjView->CurrentProject()->IsModified())
 		return true;
@@ -304,6 +326,7 @@ MainWindow::CloseProject()
 		fSavePanel->Show();
 		return false;
 	}
+#endif
 
 	return true;
 }

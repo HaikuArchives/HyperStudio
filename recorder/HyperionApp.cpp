@@ -1,6 +1,6 @@
 /*
- * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
- * Distributed under the terms of the MIT License.
+ * Copyright 2007-2009 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the GPL v3 License.
  *
  * Authors:
  *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
@@ -19,19 +19,19 @@
 
 #include <unistd.h>
 
-#include "libcore/Hyperion.h"
-#include "libcore/HyperionDebug.h"
+#include "libcore/HyperStudio.h"
+#include "libcore/HyperStudioDebug.h"
 #include "AboutWindow.h"
 #include "HyperionApp.h"
 #include "MainWindow.h"
 
-HyperionApp::HyperionApp()
-	: BApplication(HYPERION_SIGNATURE),
+RecorderApp::RecorderApp()
+	: BApplication(HYPERSTUDIO_RECORDER_SIGNATURE),
 	fWins(new BList),
 	fFirstWindow(NewWindow())
 {
 	// Installing MIME type
-	BMimeType projectType("application/x-hyperion");
+	BMimeType projectType("application/x-hyperstudio-project");
 	if (projectType.InitCheck() == B_OK) {
 		if (!projectType.IsInstalled()) {
 			app_info info;
@@ -43,7 +43,7 @@ HyperionApp::HyperionApp()
 			BBitmap* icon = NULL;
 			void* iconBits = NULL;
 
-			iconBits = res.FindResource('ICON', "BEOS:L:application/x-hyperion", &len);
+			iconBits = res.FindResource('ICON', "BEOS:L:application/x-hyperstudio-project", &len);
 			if (iconBits) {
 				icon = new BBitmap(BRect(0, 0, 31, 31), B_CMAP8);
 				icon->SetBits(iconBits, len, 0, B_CMAP8);
@@ -67,27 +67,22 @@ HyperionApp::HyperionApp()
 			BMessage extensions;
 			extensions.AddString("extensions", "hprj");
 			projectType.SetFileExtensions(&extensions);
-			projectType.SetShortDescription("Hyperion Project File");
-			projectType.SetLongDescription("Hyperion Project File.");
+			projectType.SetShortDescription("Recorder Project File");
+			projectType.SetLongDescription("Recorder Project File.");
 
 			// Set Preferred Application
-			projectType.SetPreferredApp(HYPERION_SIGNATURE, B_OPEN);
+			projectType.SetPreferredApp(HYPERSTUDIO_RECORDER_SIGNATURE, B_OPEN);
 			projectType.Install();
 		}
 	}
 }
 
-HyperionApp::~HyperionApp()
+RecorderApp::~RecorderApp()
 {
-	// Delete windows invidually and the list
-	BWindow* item;
-	for (int32 i = 0; (item = (BWindow*)fWins->ItemAt(i)); i++)
-		delete item;
-	delete fWins;
 }
 
 BWindow*
-HyperionApp::NewWindow()
+RecorderApp::NewWindow()
 {
 	BAutolock _(this);
 	// TODO: load last size and position from preferences
@@ -102,7 +97,7 @@ HyperionApp::NewWindow()
 }
 
 void
-HyperionApp::RefsReceived(BMessage* msg)
+RecorderApp::RefsReceived(BMessage* msg)
 {
 	entry_ref ref;
 
@@ -123,7 +118,7 @@ HyperionApp::RefsReceived(BMessage* msg)
 }
 
 void 
-HyperionApp::ArgvReceived(int32 argc, char** argv)
+RecorderApp::ArgvReceived(int32 argc, char** argv)
 {
 	char cwd[B_PATH_NAME_LENGTH];
 	getcwd(cwd, sizeof(cwd));
@@ -150,7 +145,7 @@ HyperionApp::ArgvReceived(int32 argc, char** argv)
 }
 
 bool
-HyperionApp::QuitRequested()
+RecorderApp::QuitRequested()
 {
 	// Close all windows but even if only one couldn't be
 	// closed we cannot quit the application!
@@ -170,9 +165,9 @@ HyperionApp::QuitRequested()
 }
 
 void
-HyperionApp::AboutRequested()
+RecorderApp::AboutRequested()
 {
 	const char* authors[] = { "Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>", NULL };
-	AboutWindow* w = new AboutWindow("Hyperion", 2007, authors, "Audio and MIDI sequencer.");
+	AboutWindow* w = new AboutWindow("HyperStudio Recorder", 2007, authors, "Multi-track audio and MIDI recorder.");
 	w->Show();
 }

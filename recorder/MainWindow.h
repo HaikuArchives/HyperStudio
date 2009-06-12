@@ -16,9 +16,10 @@ class BMenuBar;
 class BMenu;
 class BMenuItem;
 class BFilePanel;
-class ProjectView;
 class NewProjectWindow;
 class AddAudioTrackWindow;
+class TransportWindow;
+class TimelineView;
 
 class MainWindow : public BWindow {
 	public:
@@ -39,9 +40,10 @@ class MainWindow : public BWindow {
 		BMenu* fRecentMenu;
 		BFilePanel* fOpenPanel;
 		BFilePanel* fSavePanel;
-		ProjectView* fPrjView;
+		TimelineView* fTimelineView;
 		NewProjectWindow* fNewPrjWindow;
 		AddAudioTrackWindow* fAddAudioTrackWindow;
+		TransportWindow* fTransport;
 };
 
 #endif // MAIN_WINDOW_H

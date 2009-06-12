@@ -1,34 +1,31 @@
 /*
- * Copyright 2007 Pier Luigi Fiorini. All rights reserved.
- * Distributed under the terms of the MIT License.
- *
- * Authors:
- *		Pier Luigi Fiorini, pierluigi.fiorini@gmail.com
+ * Copyright 2007-2009 Pier Luigi Fiorini. All rights reserved.
+ * Distributed under the terms of the GPL v3 License.
  */
-
-#ifndef HYPERION_APP_H
-#define HYPERION_APP_H
+#ifndef RECORDER_APP_H
+#define RECORDER_APP_H
 
 #include <Application.h>
 
 class BList;
 class BWindow;
 
-class HyperionApp : public BApplication {
-	public:
-		HyperionApp();
-		virtual ~HyperionApp();
+class RecorderApp : public BApplication
+{
+public:
+				RecorderApp();
+	virtual			~RecorderApp();
 
-		BWindow* NewWindow();
+		BWindow*	NewWindow();
 
-		virtual void RefsReceived(BMessage* msg);
-		virtual void ArgvReceived(int32 argc, char** argv);
-		virtual bool QuitRequested();
-		virtual void AboutRequested();
+	virtual	void		RefsReceived(BMessage* msg);
+	virtual void		ArgvReceived(int32 argc, char** argv);
+	virtual bool		QuitRequested();
+	virtual void		AboutRequested();
 
-	private:
-		BList* fWins;
-		BWindow* fFirstWindow;
+private:
+		BList*		fWins;
+		BWindow*	fFirstWindow;
 };
 
-#endif // HYPERION_APP_H
+#endif // RECORDER_APP_H

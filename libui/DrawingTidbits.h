@@ -27,16 +27,16 @@ inline rgb_color
 Color(int32 r, int32 g, int32 b, int32 alpha = 255)
 {
 	rgb_color result;
-	result.red = r;
-	result.green = g;
-	result.blue = b;
-	result.alpha = alpha;
+	result.red = (uint8)r;
+	result.green = (uint8)g;
+	result.blue = (uint8)b;
+	result.alpha = (uint8)alpha;
 
 	return result;
 }
 
-const float kDarkness = 1.06;
-const float kDimLevel = 0.6;
+const float kDarkness = 1.06f;
+const float kDimLevel = 0.6f;
 
 void ReplaceColor(BBitmap *bitmap, rgb_color from, rgb_color to);
 void ReplaceTransparentColor(BBitmap *bitmap, rgb_color with);
