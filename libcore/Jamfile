@@ -1,4 +1,4 @@
-SubDir HYPERSTUDIO_TOP libcore ;
+SubDir TOP libcore ;
 
 StaticLibrary libcore.a :
 	Project.cpp

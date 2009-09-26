@@ -2,20 +2,53 @@
 #
 # Rules that specify what to build and how to do it.
 
+rule AddResources
+{
+	# AddResources <name> : <resourcefiles> ;
+	#
+	# Adds resources to the application.
+	#
+	# <name>: Name of the application.
+	# <resourcefiles>: List of resource files. Grist will be set.
+	#
+	local resfiles ;
+	local file ;
+	for file in $(2) {
+		if ! $(file:G) {
+			file = [ FGristFiles $(file) ] ;
+		}
+		resfiles += $(file) ;
+	}
+
+	SEARCH on $(resfile) += $(SEARCH_SOURCE) ;
+
+	for file in $(resfiles) {
+		if $(file:S) = .rdef {
+			local rdef = $(file) ;
+			file = $(rdef:S=.rsrc) ;
+			ResComp $(file) : $(rdef) ;
+		}
+		RESFILES on $(1) += $(file) ;
+	}
+}
+
 rule Application
 {
-	# Application <name> : <sources> : <libraries> ;
+	# Application <name> : <sources> : <libraries> : <res> ;
 	#
 	# Creates an application from sources.
 	#
 	# <name>: Name of the application. Grist is allowed.
 	# <sources>: List of source files. Grist will be set.
 	# <libraries>: List of libraries to link against.
+	# <res>: List of resource files. Grist will be set.
 	#
 	local app = $(1) ;
 	local sources = $(2) ;
 	local libs = $(3) ;
+	local res = $(4) ;
 
+	AddResources $(app) : $(res) ;
 	Main $(app) : $(sources) ;
 	MakeLocate $(app) : $(LOCATE_MAIN_TARGET) ;
 	LinkAgainst $(app) : $(libs) ;
@@ -28,31 +61,35 @@ actions Strip
 
 rule AddOn
 {
-	# AddOn <name> : <sources> : <libraries> ;
+	# AddOn <name> : <sources> : <libraries> : <res> ;
 	#
 	# Creates an add-on from sources.
 	#
 	# <name>: Name of the add-on. Grist is allowed.
 	# <sources>: List of source files. Grist will be set.
 	# <libraries>: List of libraries to link against.
+	# <res>: List of resource files. Grist will be set.
 	#
-	SharedLibrary $(1) : $(2) : $(3) ;
+	SharedLibrary $(1) : $(2) : $(3) : $(4) ;
 }
 
 rule SharedLibrary
 {
-	# SharedLibrary <name> : <sources> : <libraries> ;
+	# SharedLibrary <name> : <sources> : <libraries> : <res> ;
 	#
 	# Creates a shared library from sources.
 	#
 	# <name>: Name of the shared library. Grist is allowed.
 	# <sources>: List of source files. Grist will be set.
 	# <libraries>: List of libraries to link against.
+	# <res>: List of resource files. Grist will be set.
 	#
 	local lib = $(1) ;
 	local sources = $(2) ;
 	local libs = $(3) ;
+	local res = $(4) ;
 
+	AddResources $(lib) : $(res) ;
 	Main $(lib) : $(sources) ;
 	MakeLocate $(lib) : $(LOCATE_MAIN_TARGET) ;
 	local linkFlags ;
@@ -146,6 +183,41 @@ rule XRes
 		Depends $(1) : $(2) ;
 		XRes1 $(1) : $(2) ;
 	}
+}
+
+rule ResComp
+{
+	# ResComp <resource file> : <rdef file> ;
+	#
+	# Creates a binary resource file from a rdef script.
+	#
+	# <resource file>: The resource file. Grist is required.
+	# <rdef file>: The rdef script. Grist is required.
+	#
+	local defines ;
+
+	on $(1) {
+		defines = $(DEFINES) ;
+	}
+
+	DEFINES on $(1) = $(defines) ;
+	CCDEFS on $(1) = [ FDefines $(defines) ] ;
+	HDRS on $(1) = [ on $(1) FIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ]
+		$(HDRS_INCLUDES_SEPARATOR) ;
+	RCHDRS on $(1) = [ FRcIncludes $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ] ;
+
+	SEARCH on $(2) += $(SEARCH_SOURCE) ;
+	MakeLocate $(1) : $(LOCATE_TARGET) ;
+	Depends $(1) : $(2) $(RC) ;
+	LocalClean clean : $(1) ;
+	ResComp1 $(1) : $(RC) $(2) ;
+}
+
+# Note: We pipe the input files into the preprocessor, since *.rdef files are
+# considered linker scripts, and thus we can use preprocessor features.
+actions ResComp1
+{
+	cat "$(2[2-])" | $(CC) -E $(CCDEFS) $(HDRS) - | egrep -v '^#' | $(2[1]) $(RCHDRS) --auto-names -o "$(1)" -
 }
 
 actions XRes1
@@ -271,9 +343,18 @@ if $(OSPLAT) = X86 {
 	rule FSysIncludes { return "-i "$(<) ; }
 }
 
+# FRcIncludes <dirs> ;
+#
+# Counterpart of FIncludes for *.rdef scripts.
+#
+rule FRcIncludes
+{
+	return "-I "$(<) ;
+}
+
 # Variable referring to the STL.
 if $(OSPLAT) = X86 {
-	if $(HAVE_GCC4) = 1 {
+	if $(IS_GCC4_PLATFORM) = 1 {
 		TARGET_LIBSTDC++ = stdc++ ;
 	} else {
 		TARGET_LIBSTDC++ = stdc++.r4 ;
@@ -288,12 +369,12 @@ rule CreateSVNRevisionFile file
 	# CreateSVNRevisionFile <file>
 
 	local svnEntries = <svn>entries ;
-	SEARCH on $(svnEntries) = [ FDirName $(HAIKU_TOP) .svn ] ;
+	SEARCH on $(svnEntries) = [ FDirName $(TOP) .svn ] ;
 	Depends $(file) : $(svnEntries) ;
 }
 	
 actions CreateSVNRevisionFile
 {
-	(LANG=C svn info $(HYPERSTUDIO_TOP) 2> /dev/null || echo Revision: 0) |
+	(LANG=C svn info $(TOP) 2> /dev/null || echo Revision: 0) |
 		grep Revision | awk '{printf $2}' > $(1)
 }

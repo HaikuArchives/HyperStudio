@@ -22,7 +22,7 @@
 #include "libcore/Project.h"
 #include "AddAudioTrackWindow.h"
 #include "AppIconMenu.h"
-#include "HyperionConsts.h"
+#include "RecorderConsts.h"
 #include "MainWindow.h"
 #include "NewProjectWindow.h"
 #include "TransportWindow.h"

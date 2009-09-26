@@ -1,6 +1,6 @@
-SubDir HYPERSTUDIO_TOP recorder ;
+SubDir TOP recorder ;
 
-SubDirHdrs [ FDirName $(HYPERSTUDIO_TOP) ] ;
+SubDirHdrs [ FDirName $(TOP) ] ;
 
 local sourceDirs =
 	transport
@@ -9,7 +9,7 @@ local sourceDirs =
 
 local sourceDir ;
 for sourceDir in $(sourceDirs) {
-	SEARCH_SOURCE += [ FDirName $(HYPERSTUDIO_TOP) recorder $(sourceDir) ] ;
+	SEARCH_SOURCE += [ FDirName $(TOP) recorder $(sourceDir) ] ;
 }
 
 Application HyperStudio :

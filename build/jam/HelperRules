@@ -45,6 +45,8 @@ rule FSplitPath
 		components = $(path:D=) $(components) ;
 		path = $(path:D) ;
 	}
-	components = $(path) $(components) ;
+	components = $(components) ;
+	# Use this to return initial /
+	#components = $(path) $(components) ;
 	return $(components) ;
 }

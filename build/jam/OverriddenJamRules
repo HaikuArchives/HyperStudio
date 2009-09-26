@@ -42,7 +42,7 @@ actions piecemeal together existing Clean
 # headers.
 
 if $(OSPLAT) = X86 {
-	if $(HAVE_GCC4) = 1 {
+	if $(IS_GCC4_PLATFORM) = 1 {
 		HDRS_INCLUDES_SEPARATOR = -iquote- ;
 	} else {
 		HDRS_INCLUDES_SEPARATOR = -I- ;

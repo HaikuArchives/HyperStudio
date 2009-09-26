@@ -1,4 +1,4 @@
-SubDir HYPERSTUDIO_TOP libui ;
+SubDir TOP libui ;
 
 StaticLibrary libui.a :
 	DrawingTidbits.cpp
