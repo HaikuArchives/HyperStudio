@@ -56,6 +56,6 @@ Application HyperStudioRecorder :
 	YLanguageClass.cpp
 	YPreferences.cpp
 	main.cpp
-	: be tracker $(TARGET_LIBSTDC++)
+	: be tracker media game translation $(TARGET_LIBSTDC++)
 	: HyperStudioEditor.rdef
 ;
