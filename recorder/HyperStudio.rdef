@@ -143,5 +143,5 @@ resource(2, "BEOS:M:application/x-hyperion") #'MICN' array {
 	$"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 };
 
-resource(1, "BEOS:APP_SIG") (#'MIMS') "application/x-vnd.Hyperion";
+resource(1, "BEOS:APP_SIG") (#'MIMS') "application/x-vnd.HyperStudio-Recorder";
 
