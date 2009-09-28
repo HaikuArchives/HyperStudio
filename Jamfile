@@ -3,6 +3,7 @@ SubDir TOP ;
 SubInclude TOP libcore ;
 SubInclude TOP libui ;
 SubInclude TOP recorder ;
+SubInclude TOP editor ;
 
 Distro distro ;
 FullDistro fulldistro ;

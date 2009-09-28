@@ -64,9 +64,6 @@
 
 #define COPY_RIGHT "Copyright 2002 Xentronix"
 
-// This is our offical Ver description Build data/time is built into about box
-#define VERSION                "Final"
-
 // The directory off of /boot/home/settings that we look for Inferno settings
 #define SETTINGS_DIR           "BeAE"
 
