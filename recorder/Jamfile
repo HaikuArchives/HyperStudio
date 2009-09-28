@@ -17,7 +17,7 @@ Application HyperStudio :
 	AboutWindow.cpp
 	AddAudioTrackWindow.cpp
 	AppIconMenu.cpp
-	HyperionApp.cpp
+	RecorderApp.cpp
 	MainWindow.cpp
 	NewProjectWindow.cpp
 
@@ -35,5 +35,5 @@ Application HyperStudio :
 #	TracksPanelsView.cpp
 #	TracksView.cpp
 	: be tracker $(TARGET_LIBSTDC++) libcore.a libui.a
-	: Hyperion.rdef
+	: HyperStudio.rdef
 ;

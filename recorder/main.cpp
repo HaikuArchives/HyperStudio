@@ -9,7 +9,7 @@
 #include <Alert.h>
 #include <String.h>
 
-#include "HyperionApp.h"
+#include "RecorderApp.h"
 
 int
 main(int argc, char* argv[])

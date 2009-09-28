@@ -22,7 +22,7 @@
 #include "libcore/HyperStudio.h"
 #include "libcore/HyperStudioDebug.h"
 #include "AboutWindow.h"
-#include "HyperionApp.h"
+#include "RecorderApp.h"
 #include "MainWindow.h"
 
 RecorderApp::RecorderApp()
