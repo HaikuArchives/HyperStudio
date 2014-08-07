@@ -24,8 +24,8 @@ MKDIR = mkdir -p ;
 STRIP_APPS ?= 0 ;
 BUILD_TESTS ?= 0 ;
 
-# Enable debugging by default
-DEBUG ?= 1 ;
+# Don't enable debugging by default
+DEBUG ?= 0 ;
 
 rule SetUpSubDirBuildSettings
 {
